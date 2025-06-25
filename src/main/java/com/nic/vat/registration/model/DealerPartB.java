@@ -22,6 +22,7 @@ public class DealerPartB{
     private String resStreet, resCity, resDistrict, resState, resCountry, resPincode;
     private String permStreet, permCity, permDistrict, permState, permCountry, permPincode;
 
+   
     private String statutoryAuthority;
     private String activityCode;
 
