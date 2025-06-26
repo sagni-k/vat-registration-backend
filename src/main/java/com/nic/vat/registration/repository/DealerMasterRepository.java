@@ -3,6 +3,11 @@ package com.nic.vat.registration.repository;
 import com.nic.vat.registration.model.DealerMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface DealerMasterRepository extends JpaRepository<DealerMaster, Long> {
-    // No code needed. Spring Boot auto-generates everything.
+
+import java.math.BigDecimal;
+
+
+
+public interface DealerMasterRepository extends JpaRepository<DealerMaster, BigDecimal> {
+    // No custom methods for now
 }
