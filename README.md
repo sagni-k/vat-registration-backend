@@ -24,7 +24,7 @@ This backend application is built using **Spring Boot** and **PostgreSQL** to su
 
 ## 🛠️ Tech Stack
 
-- **Language**: Java 21
+- **Language**: Java 17
 - **Framework**: Spring Boot 3.5.3
 - **ORM**: Hibernate (JPA)
 - **Database**: PostgreSQL 14 (local)
