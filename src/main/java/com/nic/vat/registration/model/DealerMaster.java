@@ -110,7 +110,45 @@ public class DealerMaster {
     @Column(name = "perm_dist_cd")
     private BigDecimal permDistCd;
 
-    // ... You can continue adding other fields similarly based on project need.
+    @Column(name = "reg_central_excise")
+    private String regCentralExcise;
+
+    @Column(name = "certf_iss_muni")
+    private String tradeLicenseNo;
+
+    @Column(name = "dt_iss_certf_munci")
+    private LocalDate tradeLicenseIssueDate;
+
+    @Column(name = "dt_rnew_certf_munci")
+    private LocalDate tradeLicenseRenewalDate;
+
+    @Column(name = "acc_year_from")
+    private String accYearFrom;
+
+    @Column(name = "acc_year_to")
+    private String accYearTo;
+
+    @Column(name = "sal_last_quat")
+    private BigDecimal saleLastQuarter;
+
+    @Column(name = "sal_last_year")
+    private BigDecimal saleLastYear;
+
+    @Column(name = "shpestact_licno")
+    private String shopLicenseNo;
+
+    @Column(name = "shpestact_licno_issdt")
+    private LocalDate shopLicenseIssueDate;
+
+    @Column(name = "foodstaff_licno")
+    private String foodLicenseNo;
+
+    @Column(name = "foodstaff_licno_issdt")
+    private LocalDate foodLicenseIssueDate;
+
+    @Column(name = "isindian")
+    private String isIndian; // Use "Y"/"N" or "1"/"0"
+// ... You can continue adding other fields similarly based on project need.
 }
 
 
