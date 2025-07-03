@@ -148,6 +148,35 @@ public class DealerMaster {
 
     @Column(name = "isindian")
     private String isIndian; // Use "Y"/"N" or "1"/"0"
+
+    @Column(name = "perm_st_code")
+    private String permStCode;
+
+    @Column(name = "resi_st_code")
+    private String resiStCode;
+
+    @Column(name = "activity_code")
+    private String activityCode;
+
+    @Column(name = "commodity_name")
+    private String commodityName;
+
+    @Column(name = "commodity_description")
+    private String commodityDescription;
+
+    @Column(name = "first_taxable_sale_date")
+    private LocalDate firstTaxableSaleDate;
+
+    @Column(name = "vat_option")
+    private String vatOption;
+
+    @Column(name = "estimated_turnover")
+    private BigDecimal estimatedTurnover;
+
+    @Column(name = "filing_frequency")
+    private String filingFrequency;
+
+
 // ... You can continue adding other fields similarly based on project need.
 }
 
