@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "web_trn_dlr_address", schema = "tvat")
+@IdClass(DealerAddressId.class)
 @Data
 public class DealerAddress {
 
