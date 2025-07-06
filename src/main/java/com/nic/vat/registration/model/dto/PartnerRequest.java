@@ -1,0 +1,45 @@
+package com.nic.vat.registration.model.dto;
+
+import lombok.Data;
+
+import java.math.BigDecimal;
+
+@Data
+public class PartnerRequest {
+    private String applicationNumber;
+    private String partnerType;
+    private String partnerTypeOther;
+    private String name;
+    private String fathersName;
+    private String dateOfBirth;
+    private String designation;
+    private String qualification;
+    private String pan;
+    private String presentAddress;
+    private String area;
+    private String village;
+    private String permanentAddress;
+    private ContactDTO contact;
+    private BigDecimal interestPercent;
+    private PartnershipDatesDTO partnershipDates;
+    private ElectoralDetailsDTO electoralDetails;
+
+    @Data
+    public static class ContactDTO {
+        private String telephone;
+        private String fax;
+        private String email;
+    }
+
+    @Data
+    public static class PartnershipDatesDTO {
+        private String entryDate;
+        private String exitDate;
+    }
+
+    @Data
+    public static class ElectoralDetailsDTO {
+        private String voterId;
+        private String residentialCertNo;
+    }
+}
