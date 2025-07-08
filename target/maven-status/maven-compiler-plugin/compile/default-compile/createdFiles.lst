@@ -1,16 +1,15 @@
 com/nic/vat/registration/model/dto/PartBRequest.class
 com/nic/vat/registration/repository/DealerPartnerRepository.class
-com/nic/vat/registration/model/pk/WebTrnDlrAddressId.class
 com/nic/vat/registration/VatRegistrationApplication.class
 com/nic/vat/registration/config/security/JwtAuthenticationFilter.class
 com/nic/vat/registration/model/dto/PartnerRequest$ElectoralDetailsDTO.class
 com/nic/vat/registration/model/dto/ResidentialAddressDTO.class
 com/nic/vat/registration/config/WebConfig$1.class
 com/nic/vat/registration/model/DealerBankInfo.class
+com/nic/vat/registration/controller/DealerAddressController.class
 com/nic/vat/registration/service/AuthService.class
 com/nic/vat/registration/repository/DealerAddressRepository.class
 com/nic/vat/registration/model/dto/AdditionalBusinessPlaceRequest.class
-com/nic/vat/registration/model/WebTrnDlrAddress.class
 com/nic/vat/registration/config/security/SecurityConfig.class
 com/nic/vat/registration/model/dto/PartCRequest$Declaration.class
 com/nic/vat/registration/model/DealerPartner.class
@@ -50,6 +49,7 @@ com/nic/vat/registration/config/security/JwtAuthenticationFilter$1.class
 com/nic/vat/registration/model/dto/LoginRequest.class
 com/nic/vat/registration/model/dto/PartCRequest$ShopLicense.class
 com/nic/vat/registration/controller/DealerPartBController.class
+com/nic/vat/registration/service/DealerAddressService.class
 com/nic/vat/registration/model/DealerMaster.class
 com/nic/vat/registration/model/dto/AddressDTO.class
 com/nic/vat/registration/model/dto/PartCRequest$FoodLicense.class

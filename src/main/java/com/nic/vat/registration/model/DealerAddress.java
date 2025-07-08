@@ -48,6 +48,20 @@ public class DealerAddress {
     @Column(name = "phone")
     private String phone;
 
-    // Add other columns if needed
+    @Column(name = "branch_type")
+    private String branchType;
+
+    @Column(name = "branch_loc")
+    private String branchLoc;
+
+    @Column(name = "reg_cst_act")
+    private String regCstAct;
+
+    @Column(name = "reg_state_act")
+    private String regStateAct;
+
+    @Column(name = "edr_amend_date")
+    private LocalDate edrAmendDate;
+
 }
 

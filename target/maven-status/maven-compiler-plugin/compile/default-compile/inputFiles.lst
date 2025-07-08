@@ -6,6 +6,7 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/config/security/SecurityConfig.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/AuthController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/BankInfoController.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerAddressController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerMasterController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerPartBController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerRegistrationController.java
@@ -17,7 +18,6 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerMaster.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerPartner.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerPartnerId.java
-/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/WebTrnDlrAddress.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/AdditionalBusinessPlaceRequest.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/AddressDTO.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/BankInfoRequest.java
@@ -32,13 +32,13 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/PartnerRequest.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/PermanentAddressDTO.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/ResidentialAddressDTO.java
-/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/pk/WebTrnDlrAddressId.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerAddressRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerBankInfoRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerMasterRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerPartnerRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/AuthService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/BankInfoService.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/DealerAddressService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/DealerRegistrationService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/PartAService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/PartBService.java
