@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,12 +21,9 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private DealerMasterRepository repo;
-    
+
     @Autowired
     private JwtUtil jwtUtil;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public Map<String, Object> login(LoginRequest request) {
         Map<String, Object> response = new HashMap<>();
@@ -39,7 +35,6 @@ public class AuthService implements UserDetailsService {
             return response;
         }
 
-        // Find by ackNo — and check password
         try {
             BigDecimal ackNo = new BigDecimal(request.getApplicationNumber());
             DealerMaster dealer = repo.findById(ackNo).orElse(null);
@@ -48,20 +43,19 @@ public class AuthService implements UserDetailsService {
                 response.put("success", false);
                 response.put("message", "Invalid application number");
             } else {
-                // BCrypt password check - using encoded version of "user@123"
-                String encodedPassword = "$2a$10$dXJ3SW6G7P4S5CHgFrANjO.oQjKKlvNGaAHNRfb6FMmXCyqOJ0K5i";
-                
-                if (passwordEncoder.matches(request.getPassword(), encodedPassword)) {
-                    // Generate JWT token after successful authentication
-                    String token = jwtUtil.generateToken(request.getApplicationNumber());
-                    
-                    response.put("success", true);
-                    response.put("message", "Login successful");
-                    response.put("token", token);
-                } else {
+                // ✅ Dev password check — accept only "user@123"
+                if (!"user@123".equals(request.getPassword())) {
                     response.put("success", false);
                     response.put("message", "Invalid password");
+                    return response;
                 }
+
+                // ✅ Generate JWT token
+                String token = jwtUtil.generateToken(request.getApplicationNumber());
+
+                response.put("success", true);
+                response.put("message", "Login successful");
+                response.put("token", token);
             }
         } catch (Exception e) {
             response.put("success", false);
@@ -73,7 +67,7 @@ public class AuthService implements UserDetailsService {
 
     /**
      * Loads user details by username for Spring Security authentication
-     * 
+     *
      * @param username The username (application number) to load
      * @return UserDetails object containing user information
      * @throws UsernameNotFoundException if user is not found
@@ -83,19 +77,19 @@ public class AuthService implements UserDetailsService {
         try {
             BigDecimal ackNo = new BigDecimal(username);
             DealerMaster dealer = repo.findById(ackNo)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with application number: " + username));
-            
-            // Create UserDetails object with dealer information
-            // For now, using a mock password - replace with actual encrypted password from DB
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with application number: " + username));
+
+            // Use mock password for compatibility with Spring Security
             return User.builder()
-                .username(dealer.getAckNo().toString())
-                .password("$2a$10$dXJ3SW6G7P4S5CHgFrANjO.oQjKKlvNGaAHNRfb6FMmXCyqOJ0K5i") // BCrypt encoded "user@123"
-                .authorities(new ArrayList<>()) // Add roles/authorities as needed
-                .build();
-                
+                    .username(dealer.getAckNo().toString())
+                    .password("user@123")  // Not used in real password check — just placeholder
+                    .authorities(new ArrayList<>())
+                    .build();
+
         } catch (NumberFormatException e) {
             throw new UsernameNotFoundException("Invalid application number format: " + username);
         }
     }
 }
+
 
