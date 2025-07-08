@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +25,9 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Map<String, Object> login(LoginRequest request) {
         Map<String, Object> response = new HashMap<>();
@@ -42,21 +46,23 @@ public class AuthService implements UserDetailsService {
             if (dealer == null) {
                 response.put("success", false);
                 response.put("message", "Invalid application number");
-            } else {
-                // ✅ Dev password check — accept only "user@123"
-                if (!"user@123".equals(request.getPassword())) {
-                    response.put("success", false);
-                    response.put("message", "Invalid password");
-                    return response;
-                }
-
-                // ✅ Generate JWT token
-                String token = jwtUtil.generateToken(request.getApplicationNumber());
-
-                response.put("success", true);
-                response.put("message", "Login successful");
-                response.put("token", token);
+                return response;
             }
+
+            String hashedPassword = dealer.getPassword();
+            if (hashedPassword == null || !passwordEncoder.matches(request.getPassword(), hashedPassword)) {
+                response.put("success", false);
+                response.put("message", "Invalid password");
+                return response;
+            }
+
+            // ✅ Generate JWT token
+            String token = jwtUtil.generateToken(request.getApplicationNumber());
+
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("token", token);
+
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Invalid input format");
@@ -65,13 +71,6 @@ public class AuthService implements UserDetailsService {
         return response;
     }
 
-    /**
-     * Loads user details by username for Spring Security authentication
-     *
-     * @param username The username (application number) to load
-     * @return UserDetails object containing user information
-     * @throws UsernameNotFoundException if user is not found
-     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
@@ -79,10 +78,9 @@ public class AuthService implements UserDetailsService {
             DealerMaster dealer = repo.findById(ackNo)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with application number: " + username));
 
-            // Use mock password for compatibility with Spring Security
             return User.builder()
                     .username(dealer.getAckNo().toString())
-                    .password("user@123")  // Not used in real password check — just placeholder
+                    .password(dealer.getPassword() != null ? dealer.getPassword() : "")
                     .authorities(new ArrayList<>())
                     .build();
 
@@ -91,5 +89,6 @@ public class AuthService implements UserDetailsService {
         }
     }
 }
+
 
 

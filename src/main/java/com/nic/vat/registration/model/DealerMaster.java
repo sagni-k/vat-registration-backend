@@ -176,6 +176,9 @@ public class DealerMaster {
     @Column(name = "filing_frequency")
     private String filingFrequency;
 
+    @Column(name = "password")
+    private String password;
+
 
 // ... You can continue adding other fields similarly based on project need.
 }
