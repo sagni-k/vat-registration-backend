@@ -9,6 +9,9 @@ import com.nic.vat.registration.model.dto.ForgotPasswordRequest;
 import com.nic.vat.registration.service.PasswordService;
 import com.nic.vat.registration.model.dto.ForgotApplicationRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,6 +36,21 @@ public class AuthController {
     public ResponseEntity<?> forgotApplication(@RequestBody ForgotApplicationRequest request) {
         return ResponseEntity.ok(passwordService.forgotApplication(request));
     }
+
+    @GetMapping("/forgot-password")
+    public ResponseEntity<?> getForgotPasswordInfo() {
+        Map<String, String> response = new HashMap<>();
+        response.put("info", "Use POST with application number, DOB, and captcha.");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/forgot-application")
+    public ResponseEntity<?> getForgotApplicationInfo() {
+        Map<String, String> response = new HashMap<>();
+        response.put("info", "Use POST with applicant name, father's name, DOB, and captcha.");
+        return ResponseEntity.ok(response);
+    }
+
 
 }
 
