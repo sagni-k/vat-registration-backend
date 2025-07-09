@@ -39,15 +39,12 @@ public class PasswordService {
                 response.put("success", false);
                 response.put("message", "Invalid application number, date of birth, or captcha");
             } else {
-                // ✅ Generate new random password
                 String newPassword = generatePassword();
                 String hashedPassword = passwordEncoder.encode(newPassword);
 
-                // ✅ Save hashed password to DB
                 dealer.setPassword(hashedPassword);
                 repo.save(dealer);
 
-                // ✅ Return plain password in response
                 response.put("success", true);
                 response.put("message", "New password generated successfully");
                 response.put("newPassword", newPassword);
@@ -58,18 +55,6 @@ public class PasswordService {
         }
 
         return response;
-    }
-
-    private String generatePassword() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
-        StringBuilder password = new StringBuilder();
-        Random rnd = new Random();
-
-        for (int i = 0; i < 10; i++) {
-            password.append(chars.charAt(rnd.nextInt(chars.length())));
-        }
-
-        return password.toString();
     }
 
     public Map<String, Object> forgotApplication(ForgotApplicationRequest request) {
@@ -87,12 +72,30 @@ public class PasswordService {
             return response;
         }
 
-        DealerMaster dealer = matches.get(0); // assuming first match
+        DealerMaster dealer = matches.get(0);
+
+        // ✅ Generate and update password
+        String newPassword = generatePassword();
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        dealer.setPassword(hashedPassword);
+        repo.save(dealer);
 
         response.put("success", true);
-        response.put("message", "Application number and password sent to your registered email and mobile number");
+        response.put("message", "Application number and password retrieved successfully");
         response.put("applicationNumber", dealer.getAckNo().toPlainString());
+        response.put("newPassword", newPassword);
         return response;
     }
-}
 
+    private String generatePassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
+        StringBuilder password = new StringBuilder();
+        Random rnd = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            password.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+
+        return password.toString();
+    }
+}
