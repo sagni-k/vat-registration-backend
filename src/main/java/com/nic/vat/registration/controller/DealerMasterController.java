@@ -1,7 +1,5 @@
 package com.nic.vat.registration.controller;
 
-
-
 import com.nic.vat.registration.model.dto.PartARequest;
 import com.nic.vat.registration.model.DealerMaster;
 import com.nic.vat.registration.service.PartAService;
@@ -16,7 +14,6 @@ import java.util.Map;
 @RequestMapping("/registration")
 public class DealerMasterController {
 
-
     @Autowired
     private PartAService partAService;
 
@@ -24,10 +21,14 @@ public class DealerMasterController {
     public ResponseEntity<?> savePartA(@RequestBody PartARequest request) {
         try {
             DealerMaster saved = partAService.savePartA(request);
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("applicationNumber", saved.getAckNo().toString());
-            response.put("password", "XyZ@1234"); // dummy password generation for now
+
+            // Return the actual generated password from service
+            response.put("password", saved.getPassword());
+
             response.put("message", "Registration successful. Check your email and mobile for credentials.");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -37,5 +38,5 @@ public class DealerMasterController {
             return ResponseEntity.status(500).body(error);
         }
     }
-
 }
+
