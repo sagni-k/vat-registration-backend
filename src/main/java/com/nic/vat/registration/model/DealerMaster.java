@@ -180,6 +180,14 @@ public class DealerMaster {
     private String password;
 
 
+    @Column(name = "trn_status")
+    private String trnStatus;
+
+    @Column(name = "dlr_status")
+    private BigDecimal dlrStatus;
+
+
+
 // ... You can continue adding other fields similarly based on project need.
 }
 
