@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 
 
 public interface DealerMasterRepository extends JpaRepository<DealerMaster, BigDecimal> {
-    // No custom methods for now
+    List<DealerMaster> findByApplNameSAndFathNameAndDtBirth(String applNameS, String fathName, LocalDate dtBirth);
 }
