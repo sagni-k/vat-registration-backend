@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.Random;
 
@@ -28,7 +29,7 @@ public class PartAService {
         dealer.setAckDate(LocalDate.now());
 
         // Generate and encode password
-        String plainPassword = generatePassword(); // For now, basic fixed or random password
+        String plainPassword = generatePassword();
         dealer.setPassword(passwordEncoder.encode(plainPassword));
 
         // Map values from PartARequest to DealerMaster
@@ -57,14 +58,13 @@ public class PartAService {
             if (request.getAddress().getPinCode() != null) {
                 dealer.setPermPin(new BigDecimal(request.getAddress().getPinCode()));
             }
-            // Consider mapping district name to code if needed
         }
 
         // Save dealer
         DealerMaster savedDealer = dealerRepo.save(dealer);
 
-        // Store plain password temporarily for response (optional — can use DTO)
-        savedDealer.setPassword(plainPassword); // NOTE: Don't log or expose this in production
+        // Store plain password temporarily for response
+        savedDealer.setPassword(plainPassword); // only for response
 
         return savedDealer;
     }
@@ -75,7 +75,28 @@ public class PartAService {
     }
 
     private String generatePassword() {
-        return "XyZ@1234"; // You can replace with random password generator
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String symbols = "@#$%&";
+        String allChars = upper + lower + digits + symbols;
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        // Ensure one of each type
+        password.append(upper.charAt(random.nextInt(upper.length())));
+        password.append(lower.charAt(random.nextInt(lower.length())));
+        password.append(digits.charAt(random.nextInt(digits.length())));
+        password.append(symbols.charAt(random.nextInt(symbols.length())));
+
+        // Fill the rest (total 10 characters)
+        for (int i = 4; i < 10; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        return password.toString();
     }
 }
+
 
