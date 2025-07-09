@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,6 +37,12 @@ public class DocumentUploadController {
             response.put("message", "Invalid document upload: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    @GetMapping("/documents")
+    public ResponseEntity<?> getDocuments(@RequestParam("applicationNumber") String applicationNumber) {
+        List<Map<String, Object>> docs = documentUploadService.getDocumentsByAckNo(applicationNumber);
+        return ResponseEntity.ok(docs);
     }
 }
 

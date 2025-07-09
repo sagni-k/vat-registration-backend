@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentUploadService {
@@ -39,5 +41,18 @@ public class DocumentUploadService {
                 repo.save(doc);
             }
         }
+    }
+
+    public List<Map<String, Object>> getDocumentsByAckNo(String ackNo) {
+        return repo.findByAckNo(new BigDecimal(ackNo)).stream()
+                .map(doc -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("docType", doc.getDocType());
+                    map.put("filename", doc.getFilename());
+                    map.put("docSize", doc.getDocSize());
+                    map.put("uploadedOn", doc.getEnteredDt());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

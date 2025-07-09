@@ -32,4 +32,12 @@ public class FinalSubmitController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @GetMapping("/submit")
+    public ResponseEntity<?> checkSubmitted(@RequestParam("applicationNumber") String applicationNumber) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isSubmitted = finalSubmitService.isRegistrationSubmitted(applicationNumber);
+        response.put("submitted", isSubmitted);
+        return ResponseEntity.ok(response);
+    }
 }

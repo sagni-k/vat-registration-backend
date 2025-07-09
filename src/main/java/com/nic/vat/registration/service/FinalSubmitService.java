@@ -29,4 +29,11 @@ public class FinalSubmitService {
         repo.save(dealer);
         return true;
     }
+
+    public boolean isRegistrationSubmitted(String ackNo) {
+        return repo.findById(new BigDecimal(ackNo))
+                .map(dealer -> "SUB".equalsIgnoreCase(dealer.getTrnStatus()) ||
+                        (dealer.getDlrStatus() != null && dealer.getDlrStatus().intValue() == 2))
+                .orElse(false);
+    }
 }
