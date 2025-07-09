@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nic.vat.registration.model.dto.ForgotPasswordRequest;
 import com.nic.vat.registration.service.PasswordService;
+import com.nic.vat.registration.model.dto.ForgotApplicationRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,6 +27,11 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         return ResponseEntity.ok(passwordService.forgotPassword(request));
+    }
+
+    @PostMapping("/forgot-application")
+    public ResponseEntity<?> forgotApplication(@RequestBody ForgotApplicationRequest request) {
+        return ResponseEntity.ok(passwordService.forgotApplication(request));
     }
 
 }
