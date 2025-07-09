@@ -1,56 +1,98 @@
-package com.nic.vat.registration.controller;
+package com.nic.vat.registration.service;
 
-import com.nic.vat.registration.model.dto.LoginRequest;
-import com.nic.vat.registration.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.nic.vat.registration.model.DealerMaster;
 import com.nic.vat.registration.model.dto.ForgotPasswordRequest;
-import com.nic.vat.registration.service.PasswordService;
 import com.nic.vat.registration.model.dto.ForgotApplicationRequest;
+import com.nic.vat.registration.repository.DealerMasterRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.*;
 
-@RestController
-@RequestMapping("/auth")
-public class AuthController {
-
-    @Autowired
-    private AuthService authService;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
-    }
+@Service
+public class PasswordService {
 
     @Autowired
-    private PasswordService passwordService;
+    private DealerMasterRepository repo;
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        return ResponseEntity.ok(passwordService.forgotPassword(request));
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public Map<String, Object> forgotPassword(ForgotPasswordRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (!"B2F7P".equalsIgnoreCase(request.getCaptcha())) {
+            response.put("success", false);
+            response.put("message", "Invalid captcha");
+            return response;
+        }
+
+        try {
+            BigDecimal ackNo = new BigDecimal(request.getApplicationNumber());
+            DealerMaster dealer = repo.findById(ackNo).orElse(null);
+
+            if (dealer == null || dealer.getDtBirth() == null ||
+                    !dealer.getDtBirth().toString().equals(request.getDateOfBirth())) {
+                response.put("success", false);
+                response.put("message", "Invalid application number, date of birth, or captcha");
+            } else {
+                // ✅ Generate new random password
+                String newPassword = generatePassword();
+                String hashedPassword = passwordEncoder.encode(newPassword);
+
+                // ✅ Save hashed password to DB
+                dealer.setPassword(hashedPassword);
+                repo.save(dealer);
+
+                // ✅ Return plain password in response
+                response.put("success", true);
+                response.put("message", "New password generated successfully");
+                response.put("newPassword", newPassword);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Invalid input");
+        }
+
+        return response;
     }
 
-    @PostMapping("/forgot-application")
-    public ResponseEntity<?> forgotApplication(@RequestBody ForgotApplicationRequest request) {
-        return ResponseEntity.ok(passwordService.forgotApplication(request));
+    private String generatePassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
+        StringBuilder password = new StringBuilder();
+        Random rnd = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            password.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+
+        return password.toString();
     }
 
-    @GetMapping("/forgot-password")
-    public ResponseEntity<?> getForgotPasswordInfo() {
-        Map<String, String> response = new HashMap<>();
-        response.put("info", "Use POST with application number, DOB, and captcha.");
-        return ResponseEntity.ok(response);
+    public Map<String, Object> forgotApplication(ForgotApplicationRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        List<DealerMaster> matches = repo.findByApplNameSAndFathNameAndDtBirth(
+                request.getApplicantName(),
+                request.getFathersName(),
+                LocalDate.parse(request.getDateOfBirth())
+        );
+
+        if (matches.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "No matching record found");
+            return response;
+        }
+
+        DealerMaster dealer = matches.get(0); // assuming first match
+
+        response.put("success", true);
+        response.put("message", "Application number and password sent to your registered email and mobile number");
+        response.put("applicationNumber", dealer.getAckNo().toPlainString());
+        return response;
     }
-
-    @GetMapping("/forgot-application")
-    public ResponseEntity<?> getForgotApplicationInfo() {
-        Map<String, String> response = new HashMap<>();
-        response.put("info", "Use POST with applicant name, father's name, DOB, and captcha.");
-        return ResponseEntity.ok(response);
-    }
-
-
 }
 
