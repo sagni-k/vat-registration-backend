@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class PartnerService {
@@ -72,5 +73,10 @@ public class PartnerService {
             return false;
         }
     }
+
+    public List<DealerPartner> getPartnersByAckNo(String ackNo) {
+        return partnerRepository.findByAckNo(new BigDecimal(ackNo));
+    }
 }
+
 
