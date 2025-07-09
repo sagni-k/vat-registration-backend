@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class DealerAddressService {
@@ -42,5 +44,8 @@ public class DealerAddressService {
         address.setEdrAmendDate(LocalDate.parse(req.getEdrDate(), formatter));
 
         repository.save(address);
+    }
+    public List<DealerAddress> getBusinessPlacesByAckNo(String ackNo) {
+        return repository.findByAckNo(new BigDecimal(ackNo));
     }
 }

@@ -1,5 +1,6 @@
 package com.nic.vat.registration.controller;
 
+import com.nic.vat.registration.model.DealerAddress;
 import com.nic.vat.registration.model.dto.AdditionalBusinessPlaceRequest;
 import com.nic.vat.registration.service.DealerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/registration")
@@ -30,4 +32,10 @@ public class DealerAddressController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+    @GetMapping("/additional-business-place")
+    public ResponseEntity<?> getBusinessPlaces(@RequestParam("applicationNumber") String applicationNumber) {
+        List<DealerAddress> businessPlaces = dealerAddressService.getBusinessPlacesByAckNo(applicationNumber);
+        return ResponseEntity.ok(businessPlaces);
+    }
+
 }
