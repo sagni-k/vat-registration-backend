@@ -4,6 +4,8 @@ import com.nic.vat.registration.config.security.JwtUtil;
 import com.nic.vat.registration.model.DealerMaster;
 import com.nic.vat.registration.model.dto.LoginRequest;
 import com.nic.vat.registration.repository.DealerMasterRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,8 @@ import java.util.Map;
 @Service
 public class AuthService implements UserDetailsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
     @Autowired
     private DealerMasterRepository repo;
 
@@ -32,8 +36,10 @@ public class AuthService implements UserDetailsService {
     public Map<String, Object> login(LoginRequest request) {
         Map<String, Object> response = new HashMap<>();
 
-        // CAPTCHA check — mock for now
+        logger.info("Login request received for applicationNumber: {}", request.getApplicationNumber());
+
         if (!"A9X3Z".equalsIgnoreCase(request.getCaptcha())) {
+            logger.warn("Captcha validation failed");
             response.put("success", false);
             response.put("message", "Invalid captcha");
             return response;
@@ -44,26 +50,27 @@ public class AuthService implements UserDetailsService {
             DealerMaster dealer = repo.findById(ackNo).orElse(null);
 
             if (dealer == null) {
+                logger.warn("Dealer not found with applicationNumber: {}", request.getApplicationNumber());
                 response.put("success", false);
                 response.put("message", "Invalid application number");
                 return response;
             }
 
-            String hashedPassword = dealer.getPassword();
-            if (hashedPassword == null || !passwordEncoder.matches(request.getPassword(), hashedPassword)) {
+            if (dealer.getPassword() == null || !passwordEncoder.matches(request.getPassword(), dealer.getPassword())) {
+                logger.warn("Password mismatch for ackNo: {}", ackNo);
                 response.put("success", false);
                 response.put("message", "Invalid password");
                 return response;
             }
 
-            // ✅ Generate JWT token
             String token = jwtUtil.generateToken(request.getApplicationNumber());
-
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("token", token);
+            logger.info("Login successful, JWT issued for: {}", request.getApplicationNumber());
 
         } catch (Exception e) {
+            logger.error("Exception in login: {}", e.getMessage());
             response.put("success", false);
             response.put("message", "Invalid input format");
         }
@@ -85,10 +92,8 @@ public class AuthService implements UserDetailsService {
                     .build();
 
         } catch (NumberFormatException e) {
+            logger.error("Invalid username format: {}", username);
             throw new UsernameNotFoundException("Invalid application number format: " + username);
         }
     }
 }
-
-
-

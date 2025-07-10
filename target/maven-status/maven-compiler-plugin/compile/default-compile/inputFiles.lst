@@ -1,4 +1,5 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/VatRegistrationApplication.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/config/SimpleCorsFilter.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/config/WebConfig.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/config/security/JwtAuthEntryPoint.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/config/security/JwtAuthenticationFilter.java
@@ -10,11 +11,15 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerMasterController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerPartBController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DealerRegistrationController.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/DocumentUploadController.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/FinalSubmitController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/controller/PartnerController.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerAddress.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerAddressId.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerBankInfo.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerBankInfoId.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerDocument.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerDocumentId.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerMaster.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerPartner.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/DealerPartnerId.java
@@ -24,6 +29,8 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/CommodityDTO.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/ContactDTO.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/EconomicActivityDTO.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/FinalSubmitRequest.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/ForgotApplicationRequest.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/ForgotPasswordRequest.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/LoginRequest.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/PartARequest.java
@@ -34,12 +41,15 @@
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/model/dto/ResidentialAddressDTO.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerAddressRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerBankInfoRepository.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerDocumentRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerMasterRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/repository/DealerPartnerRepository.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/AuthService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/BankInfoService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/DealerAddressService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/DealerRegistrationService.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/DocumentUploadService.java
+/home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/FinalSubmitService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/PartAService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/PartBService.java
 /home/sagnik/Tax_NIC/src/main/java/com/nic/vat/registration/service/PartnerService.java
