@@ -23,4 +23,10 @@ public class DealerRegistrationController {
         Map<String, Object> response = registrationService.savePartC(request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/part-c")
+    public ResponseEntity<?> getPartC(@RequestParam("applicationNumber") String applicationNumber) {
+        return ResponseEntity.ok(registrationService.getPartCByAckNo(applicationNumber));
+    }
+
 }

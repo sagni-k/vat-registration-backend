@@ -60,5 +60,27 @@ public class DealerRegistrationService {
 
         return response;
     }
+
+    public Map<String, Object> getPartCByAckNo(String ackNo) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            BigDecimal ack = new BigDecimal(ackNo);
+            DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
+            if (dealer == null) {
+                response.put("error", "Dealer not found");
+                return response;
+            }
+
+            response.put("centralExciseRegNo", dealer.getRegCentralExcise());
+            response.put("tradeLicenseNo", dealer.getTradeLicenseNo());
+            response.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
+
+        } catch (Exception e) {
+            response.put("error", "Invalid application number");
+        }
+
+        return response;
+    }
+
 }
 

@@ -26,5 +26,10 @@ public class DealerPartBController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/part-b")
+    public ResponseEntity<?> getPartB(@RequestParam("applicationNumber") String applicationNumber) {
+        return ResponseEntity.ok(partBService.getPartBByAckNo(applicationNumber));
+    }
 }
 
