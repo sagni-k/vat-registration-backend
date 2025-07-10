@@ -36,8 +36,9 @@ public class DealerRegistrationController {
      @GetMapping("/part-c")
     public ResponseEntity<?> getPartC(@RequestParam("applicationNumber") String applicationNumber) {
         logger.info("Received GET request for Part-C with applicationNumber: {}", applicationNumber);
-        Map<String, Object> response = registrationService.getPartCData(applicationNumber);
-        if (response == null) {
+         Map<String, Object> response = registrationService.getPartCByAckNo(applicationNumber);
+
+         if (response == null) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Application not found"));
         }
         return ResponseEntity.ok(response);
