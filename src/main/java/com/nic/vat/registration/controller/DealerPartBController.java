@@ -31,5 +31,6 @@ public class DealerPartBController {
     public ResponseEntity<?> getPartB(@RequestParam("applicationNumber") String applicationNumber) {
         return ResponseEntity.ok(partBService.getPartBByAckNo(applicationNumber));
     }
+
 }
 

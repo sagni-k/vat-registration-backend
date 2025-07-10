@@ -61,26 +61,29 @@ public class DealerRegistrationService {
         return response;
     }
 
-    public Map<String, Object> getPartCByAckNo(String ackNo) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            BigDecimal ack = new BigDecimal(ackNo);
-            DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
-            if (dealer == null) {
-                response.put("error", "Dealer not found");
-                return response;
-            }
+    public Map<String, Object> getPartCData(String ackNo) {
+        DealerMaster dealer = dealerRepo.findById(new BigDecimal(ackNo)).orElse(null);
+        if (dealer == null) return null;
 
-            response.put("centralExciseRegNo", dealer.getRegCentralExcise());
-            response.put("tradeLicenseNo", dealer.getTradeLicenseNo());
-            response.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
+        Map<String, Object> partCData = new HashMap<>();
+        partCData.put("centralExciseRegNo", dealer.getRegCentralExcise());
+        partCData.put("tradeLicenseNo", dealer.getTradeLicenseNo());
+        partCData.put("tradeLicenseIssueDate", dealer.getTradeLicenseIssueDate());
+        partCData.put("tradeLicenseRenewalDate", dealer.getTradeLicenseRenewalDate());
+        partCData.put("accYearFrom", dealer.getAccYearFrom());
+        partCData.put("accYearTo", dealer.getAccYearTo());
+        partCData.put("saleLastQuarter", dealer.getSaleLastQuarter());
+        partCData.put("saleLastYear", dealer.getSaleLastYear());
+        partCData.put("shopLicenseNo", dealer.getShopLicenseNo());
+        partCData.put("shopLicenseIssueDate", dealer.getShopLicenseIssueDate());
+        partCData.put("foodLicenseNo", dealer.getFoodLicenseNo());
+        partCData.put("foodLicenseIssueDate", dealer.getFoodLicenseIssueDate());
+        partCData.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
 
-        } catch (Exception e) {
-            response.put("error", "Invalid application number");
-        }
-
-        return response;
+        return partCData;
     }
+
+
 
 }
 

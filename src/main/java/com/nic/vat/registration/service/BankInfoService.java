@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class BankInfoService {
@@ -28,27 +27,8 @@ public class BankInfoService {
         bankRepo.save(bankInfo);
     }
 
-    public Map<String, Object> getBankInfoByAckNo(String ackNo) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            BigDecimal ack = new BigDecimal(ackNo);
-
-            DealerBankInfo bank = bankRepo.findFirstByAckNo(ack); // ✅ assumes one record
-
-            if (bank == null) {
-                response.put("error", "No bank info found for given application number");
-                return response;
-            }
-
-            response.put("bankName", bank.getBankName());
-            response.put("accountNumber", bank.getAccountNumber());
-            response.put("accountType", bank.getAccountType());
-
-        } catch (Exception e) {
-            response.put("error", "Invalid application number format");
-        }
-
-        return response;
+    public List<DealerBankInfo> getBankInfoByAckNo(String ackNo) {
+        return bankRepo.findByAckNo(new BigDecimal(ackNo));
     }
 
 }

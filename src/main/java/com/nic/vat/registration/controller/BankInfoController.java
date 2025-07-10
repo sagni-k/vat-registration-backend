@@ -35,5 +35,6 @@ public class BankInfoController {
         return ResponseEntity.ok(bankInfoService.getBankInfoByAckNo(applicationNumber));
     }
 
+
 }
 

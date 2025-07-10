@@ -5,8 +5,9 @@ import com.nic.vat.registration.model.DealerBankInfoId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface DealerBankInfoRepository extends JpaRepository<DealerBankInfo, DealerBankInfoId> {
-    DealerBankInfo findFirstByAckNo(BigDecimal ackNo);
+    List<DealerBankInfo> findByAckNo(BigDecimal ackNo);
 }
