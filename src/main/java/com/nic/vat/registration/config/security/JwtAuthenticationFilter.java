@@ -35,7 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
+        String path = request.getRequestURI();
+        if (path.equals("/auth/login") ||
+                path.equals("/auth/forgot-password") ||
+                path.equals("/auth/forgot-application") ||
+                (path.equals("/registration/part-a") && request.getMethod().equals("POST")) ||
+                (path.equals("/registration/part-c") && request.getMethod().equals("POST"))
+        ) {
+            filterChain.doFilter(request, response); // ✅ skip auth
+            return;
+        }
         String token = extractTokenFromRequest(request);
         logger.debug("Extracted Token: {}", token);
 
