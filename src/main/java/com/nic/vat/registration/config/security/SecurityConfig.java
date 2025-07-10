@@ -29,23 +29,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {}) // ✅ Added to enable CORS within Spring Security
+                .cors(cors -> {}) // ✅ Enable CORS
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 🔓 Public endpoints
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/forgot-password",
                                 "/auth/forgot-application"
                         ).permitAll()
+
+                        // Part-A (POST and GET) is public
                         .requestMatchers(HttpMethod.POST, "/registration/part-a").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/registration/part-a").permitAll()
+
+                        // 🔓 Swagger & docs
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .anyRequest().authenticated())
+
+                        // 🔒 Everything else requires JWT
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -62,3 +71,4 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 }
+
