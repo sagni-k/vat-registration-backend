@@ -29,5 +29,11 @@ public class BankInfoController {
     }
 
     record ApiResponse(boolean success, String message) {}
+
+    @GetMapping("/bank-info")
+    public ResponseEntity<?> getBankInfo(@RequestParam("applicationNumber") String applicationNumber) {
+        return ResponseEntity.ok(bankInfoService.getBankInfoByAckNo(applicationNumber));
+    }
+
 }
 

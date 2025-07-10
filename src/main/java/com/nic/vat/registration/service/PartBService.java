@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PartBService {
@@ -113,6 +115,26 @@ public class PartBService {
         }
 
         return true;
+    }
+    public Map<String, Object> getPartBByAckNo(String ackNo) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            BigDecimal ackNoDecimal = new BigDecimal(ackNo);
+            DealerMaster dealer = dealerRepo.findById(ackNoDecimal).orElse(null);
+            if (dealer == null) {
+                response.put("error", "Dealer not found");
+                return response;
+            }
+
+            response.put("statutoryAuthority", dealer.getRegType()); // or any relevant field
+            response.put("vatOption", dealer.getVatOption());
+            response.put("estimatedTurnover", dealer.getEstimatedTurnover());
+            return response;
+
+        } catch (Exception e) {
+            response.put("error", "Invalid application number");
+            return response;
+        }
     }
 
 }

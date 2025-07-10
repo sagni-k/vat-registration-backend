@@ -38,5 +38,11 @@ public class DealerMasterController {
             return ResponseEntity.status(500).body(error);
         }
     }
+
+    @GetMapping("/part-a")
+    public ResponseEntity<?> getPartA(@RequestParam("applicationNumber") String applicationNumber) {
+        return ResponseEntity.ok(partAService.getPartAByAckNo(applicationNumber));
+    }
+
 }
 

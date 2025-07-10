@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PartAService {
@@ -97,6 +99,26 @@ public class PartAService {
 
         return password.toString();
     }
+    public Map<String, Object> getPartAByAckNo(String ackNo) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            BigDecimal ack = new BigDecimal(ackNo);
+            DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
+            if (dealer == null) {
+                response.put("error", "Dealer not found");
+                return response;
+            }
+
+            response.put("applicantName", dealer.getApplNameS());
+            response.put("tradingName", dealer.getTradName());
+            response.put("pan", dealer.getPan());
+            return response;
+        } catch (Exception e) {
+            response.put("error", "Invalid application number");
+            return response;
+        }
+    }
+
 }
 
 
