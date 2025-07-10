@@ -29,10 +29,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {}) // Enable CORS
+                .cors(cors -> {}) // ✅ CORS enabled
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/forgot-password",
@@ -41,10 +42,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/registration/part-a").permitAll()
                         .requestMatchers(HttpMethod.GET, "/registration/part-a").permitAll()
 
-                        // ✅ Allow preflight OPTIONS requests
+                        // TEMPORARILY make these public
+                        .requestMatchers(HttpMethod.POST, "/registration/part-c").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/registration/bank-info").permitAll()
+
+                        // Preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Swagger/OpenAPI
+                        // Swagger
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -52,6 +57,7 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
+                        // All other endpoints are protected
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthEntryPoint))
@@ -70,5 +76,4 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 }
-
 
