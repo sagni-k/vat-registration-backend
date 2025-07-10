@@ -80,8 +80,19 @@ public class DealerRegistrationService {
 
             response.put("centralExciseRegNo", dealer.getRegCentralExcise());
             response.put("tradeLicenseNo", dealer.getTradeLicenseNo());
+            response.put("tradeLicenseIssueDate", dealer.getTradeLicenseIssueDate());
+            response.put("tradeLicenseRenewalDate", dealer.getTradeLicenseRenewalDate());
+            response.put("accYearFrom", dealer.getAccYearFrom());
+            response.put("accYearTo", dealer.getAccYearTo());
+            response.put("saleLastQuarter", dealer.getSaleLastQuarter());
+            response.put("saleLastYear", dealer.getSaleLastYear());
+            response.put("shopLicenseNo", dealer.getShopLicenseNo());
+            response.put("shopLicenseIssueDate", dealer.getShopLicenseIssueDate());
+            response.put("foodLicenseNo", dealer.getFoodLicenseNo());
+            response.put("foodLicenseIssueDate", dealer.getFoodLicenseIssueDate());
             response.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
 
+            logger.info("Part-C fetched successfully for applicationNumber: {}", ackNo);
         } catch (Exception e) {
             logger.error("Error fetching Part C for {}: {}", ackNo, e.getMessage());
             response.put("error", "Invalid application number");

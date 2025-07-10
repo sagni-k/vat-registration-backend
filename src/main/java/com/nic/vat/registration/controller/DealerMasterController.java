@@ -41,7 +41,8 @@ public class DealerMasterController {
 
     @GetMapping("/part-a")
     public ResponseEntity<?> getPartA(@RequestParam("applicationNumber") String applicationNumber) {
-        return ResponseEntity.ok(partAService.getPartAByAckNo(applicationNumber));
+        DealerMaster data = partAService.getPartAByAckNo(applicationNumber);
+        return data != null ? ResponseEntity.ok(data) : ResponseEntity.notFound().build();
     }
 
 }

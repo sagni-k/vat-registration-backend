@@ -117,25 +117,16 @@ public class PartBService {
         return true;
     }
     public Map<String, Object> getPartBByAckNo(String ackNo) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            BigDecimal ackNoDecimal = new BigDecimal(ackNo);
-            DealerMaster dealer = dealerRepo.findById(ackNoDecimal).orElse(null);
-            if (dealer == null) {
-                response.put("error", "Dealer not found");
-                return response;
-            }
+        BigDecimal ack = new BigDecimal(ackNo);
+        DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
+        List<DealerAddress> addresses = addressRepo.findByAckNo(ack);
 
-            response.put("statutoryAuthority", dealer.getRegType()); // or any relevant field
-            response.put("vatOption", dealer.getVatOption());
-            response.put("estimatedTurnover", dealer.getEstimatedTurnover());
-            return response;
-
-        } catch (Exception e) {
-            response.put("error", "Invalid application number");
-            return response;
-        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("dealer", dealer);
+        result.put("branchAddresses", addresses);
+        return result;
     }
+
 
 }
 

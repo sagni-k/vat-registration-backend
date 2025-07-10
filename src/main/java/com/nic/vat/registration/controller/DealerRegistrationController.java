@@ -1,5 +1,6 @@
 package com.nic.vat.registration.controller;
 
+import com.nic.vat.registration.model.DealerMaster;
 import com.nic.vat.registration.model.dto.PartCRequest;
 import com.nic.vat.registration.service.DealerRegistrationService;
 import org.slf4j.Logger;
@@ -32,10 +33,18 @@ public class DealerRegistrationController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/part-c")
+     @GetMapping("/part-c")
     public ResponseEntity<?> getPartC(@RequestParam("applicationNumber") String applicationNumber) {
         logger.info("Received GET request for Part-C with applicationNumber: {}", applicationNumber);
-        return ResponseEntity.ok(registrationService.getPartCByAckNo(applicationNumber));
+        Map<String, Object> response = registrationService.getPartCData(applicationNumber);
+        if (response == null) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Application not found"));
+        }
+        return ResponseEntity.ok(response);
     }
+
+
+
+
 
 }
