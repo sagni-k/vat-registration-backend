@@ -1,7 +1,9 @@
 com/nic/vat/registration/model/dto/PartBRequest.class
 com/nic/vat/registration/repository/DealerPartnerRepository.class
 com/nic/vat/registration/VatRegistrationApplication.class
+com/nic/vat/registration/controller/FinalSubmitController.class
 com/nic/vat/registration/config/security/JwtAuthenticationFilter.class
+com/nic/vat/registration/config/SimpleCorsFilter.class
 com/nic/vat/registration/model/dto/PartnerRequest$ElectoralDetailsDTO.class
 com/nic/vat/registration/model/dto/ResidentialAddressDTO.class
 com/nic/vat/registration/config/WebConfig$1.class
@@ -9,6 +11,7 @@ com/nic/vat/registration/model/DealerBankInfo.class
 com/nic/vat/registration/controller/DealerAddressController.class
 com/nic/vat/registration/service/AuthService.class
 com/nic/vat/registration/repository/DealerAddressRepository.class
+com/nic/vat/registration/model/dto/ForgotApplicationRequest.class
 com/nic/vat/registration/model/dto/AdditionalBusinessPlaceRequest.class
 com/nic/vat/registration/config/security/SecurityConfig.class
 com/nic/vat/registration/model/dto/PartCRequest$Declaration.class
@@ -28,7 +31,9 @@ com/nic/vat/registration/repository/DealerMasterRepository.class
 com/nic/vat/registration/repository/DealerBankInfoRepository.class
 com/nic/vat/registration/service/PartAService.class
 com/nic/vat/registration/model/dto/BankInfoRequest.class
+com/nic/vat/registration/model/DealerDocument.class
 com/nic/vat/registration/service/PartBService.class
+com/nic/vat/registration/service/FinalSubmitService.class
 com/nic/vat/registration/service/PasswordService.class
 com/nic/vat/registration/model/DealerAddressId.class
 com/nic/vat/registration/model/dto/PartARequest.class
@@ -39,8 +44,11 @@ com/nic/vat/registration/controller/DealerRegistrationController.class
 com/nic/vat/registration/controller/PartnerController.class
 com/nic/vat/registration/controller/DealerMasterController.class
 com/nic/vat/registration/model/dto/ForgotPasswordRequest.class
+com/nic/vat/registration/controller/DocumentUploadController.class
 com/nic/vat/registration/controller/BankInfoController.class
+com/nic/vat/registration/repository/DealerDocumentRepository.class
 com/nic/vat/registration/service/BankInfoService.class
+com/nic/vat/registration/service/DocumentUploadService.class
 com/nic/vat/registration/model/dto/PermanentAddressDTO.class
 com/nic/vat/registration/model/dto/EconomicActivityDTO.class
 com/nic/vat/registration/model/dto/PartnerRequest$PartnershipDatesDTO.class
@@ -51,6 +59,8 @@ com/nic/vat/registration/model/dto/PartCRequest$ShopLicense.class
 com/nic/vat/registration/controller/DealerPartBController.class
 com/nic/vat/registration/service/DealerAddressService.class
 com/nic/vat/registration/model/DealerMaster.class
+com/nic/vat/registration/model/DealerDocumentId.class
+com/nic/vat/registration/model/dto/FinalSubmitRequest.class
 com/nic/vat/registration/model/dto/AddressDTO.class
 com/nic/vat/registration/model/dto/PartCRequest$FoodLicense.class
 com/nic/vat/registration/model/dto/CommodityDTO.class

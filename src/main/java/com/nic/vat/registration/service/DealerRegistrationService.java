@@ -3,26 +3,29 @@ package com.nic.vat.registration.service;
 import com.nic.vat.registration.model.DealerMaster;
 import com.nic.vat.registration.model.dto.PartCRequest;
 import com.nic.vat.registration.repository.DealerMasterRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class DealerRegistrationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DealerRegistrationService.class);
+
     @Autowired
     private DealerMasterRepository dealerRepo;
 
     public Map<String, Object> savePartC(PartCRequest request) {
+        logger.info("Saving Part-C for applicationNumber: {}", request.getApplicationNumber());
         Map<String, Object> response = new HashMap<>();
 
         try {
             BigDecimal ackNo = new BigDecimal(request.getApplicationNumber());
-
             DealerMaster dealer = dealerRepo.findById(ackNo).orElseThrow(() ->
                     new RuntimeException("Dealer not found with application number: " + ackNo));
 
@@ -30,7 +33,6 @@ public class DealerRegistrationService {
             dealer.setTradeLicenseNo(request.getTradeLicenseNo());
             dealer.setTradeLicenseIssueDate(request.getTradeLicenseIssueDate());
             dealer.setTradeLicenseRenewalDate(request.getTradeLicenseRenewalDate());
-
             dealer.setAccYearFrom(request.getAccountingYearFrom());
             dealer.setAccYearTo(request.getAccountingYearTo());
             dealer.setSaleLastQuarter(request.getSaleLastQuarter());
@@ -48,12 +50,13 @@ public class DealerRegistrationService {
 
             dealer.setIsIndian(request.getIsIndianCitizen() != null && request.getIsIndianCitizen() ? "Y" : "N");
 
-            // Save back to DB
             dealerRepo.save(dealer);
+            logger.info("Part-C saved successfully for applicationNumber: {}", request.getApplicationNumber());
 
             response.put("success", true);
             response.put("message", "Part C saved successfully.");
         } catch (Exception e) {
+            logger.error("Error saving Part C for {}: {}", request.getApplicationNumber(), e.getMessage());
             response.put("success", false);
             response.put("message", "Failed to save Part C: " + e.getMessage());
         }
@@ -61,29 +64,40 @@ public class DealerRegistrationService {
         return response;
     }
 
-    public Map<String, Object> getPartCData(String ackNo) {
-        DealerMaster dealer = dealerRepo.findById(new BigDecimal(ackNo)).orElse(null);
-        if (dealer == null) return null;
+    public Map<String, Object> getPartCByAckNo(String ackNo) {
+        logger.info("Fetching Part-C for applicationNumber: {}", ackNo);
+        Map<String, Object> response = new HashMap<>();
 
-        Map<String, Object> partCData = new HashMap<>();
-        partCData.put("centralExciseRegNo", dealer.getRegCentralExcise());
-        partCData.put("tradeLicenseNo", dealer.getTradeLicenseNo());
-        partCData.put("tradeLicenseIssueDate", dealer.getTradeLicenseIssueDate());
-        partCData.put("tradeLicenseRenewalDate", dealer.getTradeLicenseRenewalDate());
-        partCData.put("accYearFrom", dealer.getAccYearFrom());
-        partCData.put("accYearTo", dealer.getAccYearTo());
-        partCData.put("saleLastQuarter", dealer.getSaleLastQuarter());
-        partCData.put("saleLastYear", dealer.getSaleLastYear());
-        partCData.put("shopLicenseNo", dealer.getShopLicenseNo());
-        partCData.put("shopLicenseIssueDate", dealer.getShopLicenseIssueDate());
-        partCData.put("foodLicenseNo", dealer.getFoodLicenseNo());
-        partCData.put("foodLicenseIssueDate", dealer.getFoodLicenseIssueDate());
-        partCData.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
+        try {
+            BigDecimal ack = new BigDecimal(ackNo);
+            DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
 
-        return partCData;
+            if (dealer == null) {
+                logger.warn("Dealer not found for ackNo: {}", ackNo);
+                response.put("error", "Dealer not found");
+                return response;
+            }
+
+            response.put("centralExciseRegNo", dealer.getRegCentralExcise());
+            response.put("tradeLicenseNo", dealer.getTradeLicenseNo());
+            response.put("tradeLicenseIssueDate", dealer.getTradeLicenseIssueDate());
+            response.put("tradeLicenseRenewalDate", dealer.getTradeLicenseRenewalDate());
+            response.put("accYearFrom", dealer.getAccYearFrom());
+            response.put("accYearTo", dealer.getAccYearTo());
+            response.put("saleLastQuarter", dealer.getSaleLastQuarter());
+            response.put("saleLastYear", dealer.getSaleLastYear());
+            response.put("shopLicenseNo", dealer.getShopLicenseNo());
+            response.put("shopLicenseIssueDate", dealer.getShopLicenseIssueDate());
+            response.put("foodLicenseNo", dealer.getFoodLicenseNo());
+            response.put("foodLicenseIssueDate", dealer.getFoodLicenseIssueDate());
+            response.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
+
+            logger.info("Part-C fetched successfully for applicationNumber: {}", ackNo);
+        } catch (Exception e) {
+            logger.error("Error fetching Part C for {}: {}", ackNo, e.getMessage());
+            response.put("error", "Invalid application number");
+        }
+
+        return response;
     }
-
-
-
 }
-
