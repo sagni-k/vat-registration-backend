@@ -12,7 +12,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/registration")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "https://vat-registration-frontend.vercel.app"
+})
+
 public class DealerRegistrationController {
 
     private static final Logger logger = LoggerFactory.getLogger(DealerRegistrationController.class);

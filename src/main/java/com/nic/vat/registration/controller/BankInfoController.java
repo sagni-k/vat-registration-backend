@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/registration")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "https://vat-registration-frontend.vercel.app"
+})
+
 public class BankInfoController {
 
     private static final Logger logger = LoggerFactory.getLogger(BankInfoController.class);
