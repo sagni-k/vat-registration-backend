@@ -44,6 +44,8 @@ public class PartAService {
         dealer.setOffice(request.getOffice());
         dealer.setRegType(request.getTypeOfRegistration());
 
+        dealer.setBusConstitution(request.getBusinessConstitution()); // ✅ Save businessConstitution
+
         // Contact and Address fields
         if (request.getContact() != null) {
             dealer.setTelephone(request.getContact().getTelephone());
@@ -60,6 +62,11 @@ public class PartAService {
             if (request.getAddress().getPinCode() != null) {
                 dealer.setPermPin(new BigDecimal(request.getAddress().getPinCode()));
             }
+
+            // ✅ Save extra address fields
+            dealer.setPermArea(request.getAddress().getArea());
+            dealer.setPermDistrict(request.getAddress().getDistrict());
+            dealer.setPermOccupancyStatus(request.getAddress().getOccupancyStatus());
         }
 
         // Save dealer
@@ -99,6 +106,7 @@ public class PartAService {
 
         return password.toString();
     }
+
     public Map<String, Object> getPartAFields(String ackNo) {
         DealerMaster dealer = dealerRepo.findByAckNo(new BigDecimal(ackNo)).orElse(null);
         if (dealer == null) return null;
@@ -106,7 +114,7 @@ public class PartAService {
         Map<String, Object> map = new HashMap<>();
         map.put("typeOfRegistration", dealer.getRegType());
         map.put("office", dealer.getOffice());
-        map.put("businessConstitution", dealer.getBusStatus()); // if stored
+        map.put("businessConstitution", dealer.getBusConstitution()); // ✅ Return stored value
         map.put("applicantName", dealer.getApplNameS());
         map.put("fathersName", dealer.getFathName());
         map.put("dateOfBirth", dealer.getDtBirth() != null ? dealer.getDtBirth().toString() : null);
@@ -119,9 +127,9 @@ public class PartAService {
         address.put("roomNo", dealer.getPermAddr());
         address.put("village", dealer.getPermPlace());
         address.put("pinCode", dealer.getPermPin() != null ? dealer.getPermPin().toString() : null);
-        address.put("area", "");  // not in DB
-        address.put("district", ""); // not in DB
-        address.put("occupancyStatus", ""); // not in DB
+        address.put("area", dealer.getPermArea());
+        address.put("district", dealer.getPermDistrict());
+        address.put("occupancyStatus", dealer.getPermOccupancyStatus());
         map.put("address", address);
 
         // Contact
@@ -134,8 +142,4 @@ public class PartAService {
 
         return map;
     }
-
-
 }
-
-

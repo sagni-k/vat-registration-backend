@@ -186,6 +186,17 @@ public class DealerMaster {
     @Column(name = "dlr_status")
     private BigDecimal dlrStatus;
 
+    @Column(name = "bus_constitution")
+    private String busConstitution;
+
+    @Column(name = "perm_area")
+    private String permArea;
+
+    @Column(name = "perm_district")
+    private String permDistrict;
+
+    @Column(name = "perm_occupancy_status")
+    private String permOccupancyStatus;
 
 
 // ... You can continue adding other fields similarly based on project need.
