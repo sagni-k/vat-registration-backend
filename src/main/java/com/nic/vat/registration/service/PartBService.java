@@ -121,11 +121,52 @@ public class PartBService {
         DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
         List<DealerAddress> addresses = addressRepo.findByAckNo(ack);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("dealer", dealer);
-        result.put("branchAddresses", addresses);
-        return result;
+        Map<String, Object> response = new HashMap<>();
+
+        if (dealer == null) {
+            response.put("success", false);
+            response.put("message", "Dealer not found");
+            return response;
+        }
+
+        // Permanent Address
+        Map<String, Object> permanentAddress = new HashMap<>();
+        permanentAddress.put("addressLine", dealer.getPermAddr());
+        permanentAddress.put("place", dealer.getPermPlace());
+        permanentAddress.put("distCd", dealer.getPermDistCd());
+        permanentAddress.put("stCode", dealer.getPermStCode());
+        permanentAddress.put("pin", dealer.getPermPin());
+
+        // Residential Address
+        Map<String, Object> residentialAddress = new HashMap<>();
+        residentialAddress.put("addressLine", dealer.getResiAdd1());
+        residentialAddress.put("place", dealer.getResiPlace());
+        residentialAddress.put("distCd", dealer.getResiDistCd());
+        residentialAddress.put("stCode", dealer.getResiStCode());
+        residentialAddress.put("pin", dealer.getResiPin());
+
+        // Commodity & Economic Info
+        Map<String, Object> commodity = new HashMap<>();
+        commodity.put("name", dealer.getCommodityName());
+        commodity.put("description", dealer.getCommodityDescription());
+
+        Map<String, Object> economicActivity = new HashMap<>();
+        economicActivity.put("activityCode", dealer.getActivityCode());
+
+        response.put("success", true);
+        response.put("permanentAddress", permanentAddress);
+        response.put("residentialAddress", residentialAddress);
+        response.put("commodity", commodity);
+        response.put("economicActivity", economicActivity);
+        response.put("firstTaxableSaleDate", dealer.getFirstTaxableSaleDate());
+        response.put("vatOption", dealer.getVatOption());
+        response.put("estimatedTurnover", dealer.getEstimatedTurnover());
+        response.put("filingFrequency", dealer.getFilingFrequency());
+        response.put("branchAddresses", addresses); // List<DealerAddress>
+
+        return response;
     }
+
 
 
 }
