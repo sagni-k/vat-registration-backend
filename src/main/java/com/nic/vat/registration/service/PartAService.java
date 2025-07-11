@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -97,9 +99,42 @@ public class PartAService {
 
         return password.toString();
     }
-    public DealerMaster getPartAByAckNo(String ackNo) {
-        return dealerRepo.findByAckNo(new BigDecimal(ackNo)).orElse(null);
+    public Map<String, Object> getPartAFields(String ackNo) {
+        DealerMaster dealer = dealerRepo.findByAckNo(new BigDecimal(ackNo)).orElse(null);
+        if (dealer == null) return null;
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("typeOfRegistration", dealer.getRegType());
+        map.put("office", dealer.getOffice());
+        map.put("businessConstitution", dealer.getBusStatus()); // if stored
+        map.put("applicantName", dealer.getApplNameS());
+        map.put("fathersName", dealer.getFathName());
+        map.put("dateOfBirth", dealer.getDtBirth() != null ? dealer.getDtBirth().toString() : null);
+        map.put("gender", dealer.getSex());
+        map.put("tradingName", dealer.getTradName());
+        map.put("pan", dealer.getPan());
+
+        // Address
+        Map<String, String> address = new HashMap<>();
+        address.put("roomNo", dealer.getPermAddr());
+        address.put("village", dealer.getPermPlace());
+        address.put("pinCode", dealer.getPermPin() != null ? dealer.getPermPin().toString() : null);
+        address.put("area", "");  // not in DB
+        address.put("district", ""); // not in DB
+        address.put("occupancyStatus", ""); // not in DB
+        map.put("address", address);
+
+        // Contact
+        Map<String, String> contact = new HashMap<>();
+        contact.put("telephone", dealer.getTelephone());
+        contact.put("fax", dealer.getFax());
+        contact.put("email", dealer.getEmail());
+        contact.put("mobile", dealer.getMobile() != null ? dealer.getMobile().toString() : null);
+        map.put("contact", contact);
+
+        return map;
     }
+
 
 }
 
