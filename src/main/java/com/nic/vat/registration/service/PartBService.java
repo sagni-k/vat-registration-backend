@@ -30,42 +30,45 @@ public class PartBService {
         try {
             ackNo = new BigDecimal(request.getApplicationNumber());
         } catch (Exception e) {
-            return false; // Invalid application number format
+            return false;
         }
 
         DealerMaster dealer = dealerRepo.findById(ackNo).orElse(null);
         if (dealer == null) return false;
 
-        // Update permanent address
+        dealer.setStatutoryAuthority(request.getStatutoryAuthority());
+
         if (request.getPermanentAddress() != null) {
             var perm = request.getPermanentAddress();
             dealer.setPermAddr(perm.getAddressLine());
             dealer.setPermPlace(perm.getPlace());
             dealer.setPermStCode(perm.getStCode());
-
+            dealer.setPermCountry(perm.getCountry());
             if (isValid(perm.getDistCd()))
                 dealer.setPermDistCd(new BigDecimal(perm.getDistCd()));
             if (isValid(perm.getPin()))
                 dealer.setPermPin(new BigDecimal(perm.getPin()));
         }
 
-        // Update residential address
         if (request.getResidentialAddress() != null) {
             var resi = request.getResidentialAddress();
             dealer.setResiAdd1(resi.getAddressLine());
             dealer.setResiPlace(resi.getPlace());
             dealer.setResiStCode(resi.getStCode());
-
+            dealer.setResiCountry(resi.getCountry());
             if (isValid(resi.getDistCd()))
                 dealer.setResiDistCd(new BigDecimal(resi.getDistCd()));
             if (isValid(resi.getPin()))
                 dealer.setResiPin(new BigDecimal(resi.getPin()));
         }
 
-        // Update economic activity and commodity
         if (request.getEconomicActivity() != null) {
             dealer.setActivityCode(request.getEconomicActivity().getActivityCode());
+            if (request.getEconomicActivity().getRoles() != null) {
+                dealer.setEconomicRoles(String.join(",", request.getEconomicActivity().getRoles()));
+            }
         }
+
         if (request.getCommodity() != null) {
             dealer.setCommodityName(request.getCommodity().getName());
             dealer.setCommodityDescription(request.getCommodity().getDescription());
@@ -86,7 +89,6 @@ public class PartBService {
 
         dealerRepo.save(dealer);
 
-        // Save branch addresses
         if (request.getBranchAddresses() != null) {
             List<DealerAddress> addresses = new ArrayList<>();
             int sno = 1;
@@ -113,6 +115,7 @@ public class PartBService {
 
         return true;
     }
+
     public Map<String, Object> getPartBByAckNo(String ackNo) {
         BigDecimal ack = new BigDecimal(ackNo);
         DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
@@ -126,25 +129,22 @@ public class PartBService {
             return response;
         }
 
-        // Permanent Address
         Map<String, Object> permanentAddress = new HashMap<>();
         permanentAddress.put("street", dealer.getPermAddr());
         permanentAddress.put("city", dealer.getPermPlace());
-        permanentAddress.put("district", dealer.getPermDistCd()); // optional
+        permanentAddress.put("district", dealer.getPermDistCd());
         permanentAddress.put("state", dealer.getPermStCode());
-        permanentAddress.put("country", dealer.getPermCountry()); // if added
+        permanentAddress.put("country", dealer.getPermCountry());
         permanentAddress.put("pinCode", dealer.getPermPin());
 
-        // Residential Address
         Map<String, Object> residentialAddress = new HashMap<>();
         residentialAddress.put("street", dealer.getResiAdd1());
         residentialAddress.put("city", dealer.getResiPlace());
-        residentialAddress.put("district", dealer.getResiDistCd()); // optional
+        residentialAddress.put("district", dealer.getResiDistCd());
         residentialAddress.put("state", dealer.getResiStCode());
-        residentialAddress.put("country", dealer.getResiCountry()); // if added
+        residentialAddress.put("country", dealer.getResiCountry());
         residentialAddress.put("pinCode", dealer.getResiPin());
 
-        // Commodity & Economic Info
         Map<String, Object> commodity = new HashMap<>();
         commodity.put("name", dealer.getCommodityName());
         commodity.put("description", dealer.getCommodityDescription());
@@ -165,13 +165,8 @@ public class PartBService {
         response.put("vatOption", dealer.getVatOption());
         response.put("estimatedTurnover", dealer.getEstimatedTurnover());
         response.put("filingFrequency", dealer.getFilingFrequency());
-        response.put("branchAddresses", addresses); // List<DealerAddress>
+        response.put("branchAddresses", addresses);
 
         return response;
     }
-
-
-
-
 }
-

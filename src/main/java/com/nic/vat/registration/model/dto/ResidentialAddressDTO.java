@@ -9,5 +9,7 @@ public class ResidentialAddressDTO {
     private String distCd;
     private String stCode;
     private String pin;
+    private String country; // 🆕
 }
+
 
