@@ -50,21 +50,27 @@ public class BankInfoService {
 
             if (bank == null) {
                 logger.warn("No bank info found for applicationNumber: {}", ackNo);
-                response.put("error", "No bank info found for given application number");
+                response.put("success", false);
+                response.put("message", "No bank info found for given application number");
                 return response;
             }
 
+            response.put("success", true);
+            response.put("applicationNumber", bank.getAckNo().toPlainString());
             response.put("bankName", bank.getBankName());
+            response.put("branchAddress", bank.getBranchAddress());
             response.put("accountNumber", bank.getAccountNumber());
+            response.put("branchCode", bank.getBranchCode());
             response.put("accountType", bank.getAccountType());
+
             logger.info("Bank info fetched successfully for applicationNumber: {}", ackNo);
 
         } catch (Exception e) {
             logger.error("Invalid application number format for bank info: {} - {}", ackNo, e.getMessage());
-            response.put("error", "Invalid application number format");
+            response.put("success", false);
+            response.put("message", "Invalid application number format");
         }
 
         return response;
     }
 }
-
