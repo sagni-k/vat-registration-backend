@@ -206,6 +206,17 @@ public class DealerMaster {
     @Column(name = "declare_designation")
     private String declareDesignation;
 
+    @Column(name = "statutory_authority")
+    private String statutoryAuthority;
+
+    @Column(name = "economic_roles")
+    private String economicRoles; // comma-separated: "Manufacturer,Trader"
+
+    @Column(name = "perm_country")
+    private String permCountry;
+
+    @Column(name = "resi_country")
+    private String resiCountry;
 
 // ... You can continue adding other fields similarly based on project need.
 }
