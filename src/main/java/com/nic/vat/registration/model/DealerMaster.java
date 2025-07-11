@@ -19,7 +19,6 @@ public class DealerMaster {
     @Column(name = "\"ack_date\"", nullable = false)
     private LocalDate ackDate;
 
-
     @Column(name = "tin_no")
     private BigDecimal tinNo;
 
@@ -197,6 +196,15 @@ public class DealerMaster {
 
     @Column(name = "perm_occupancy_status")
     private String permOccupancyStatus;
+
+    @Column(name = "account_lang")
+    private String accountLang;
+
+    @Column(name = "declare_name")
+    private String declareName;
+
+    @Column(name = "declare_designation")
+    private String declareDesignation;
 
 
 // ... You can continue adding other fields similarly based on project need.
