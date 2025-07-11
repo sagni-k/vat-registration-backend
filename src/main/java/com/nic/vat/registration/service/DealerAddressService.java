@@ -27,22 +27,27 @@ public class DealerAddressService {
             Map.entry("Dhalai", new BigDecimal("6")),
             Map.entry("North Tripura", new BigDecimal("7")),
             Map.entry("Unakoti", new BigDecimal("8"))
-            // 🔁 Add more districts if needed
     );
+
+    private static final Map<BigDecimal, String> DISTRICT_NAMES = new HashMap<>();
+
+    static {
+        DISTRICT_CODES.forEach((k, v) -> DISTRICT_NAMES.put(v, k));
+    }
 
     public void saveAdditionalBusinessPlace(AdditionalBusinessPlaceRequest req) {
         DealerAddress address = new DealerAddress();
 
         address.setAckNo(new BigDecimal(req.getApplicationNumber()));
-        address.setTinNo(BigDecimal.ZERO); // placeholder; update if actual TIN is available
-        address.setSno(new BigDecimal(System.currentTimeMillis() % 10000)); // simple unique serial
+        address.setTinNo(BigDecimal.ZERO);
+        address.setSno(new BigDecimal(System.currentTimeMillis() % 10000));
 
         address.setName(req.getName());
         address.setAddr1(req.getStreet());
         address.setAddr2(req.getArea());
         address.setPlace(req.getCity());
 
-        // ✅ Validate and map district name to numeric code
+        // Validate and map district
         if (!DISTRICT_CODES.containsKey(req.getDistrict())) {
             throw new IllegalArgumentException("Invalid district. Please use one of the following: " +
                     String.join(", ", DISTRICT_CODES.keySet()));
@@ -58,13 +63,41 @@ public class DealerAddressService {
         address.setRegCstAct(req.getRegistrationNo());
         address.setRegStateAct(req.getUnderStateAct());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        address.setEdrAmendDate(LocalDate.parse(req.getEdrDate(), formatter));
+        if (req.getEdrDate() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            address.setEdrAmendDate(LocalDate.parse(req.getEdrDate(), formatter));
+        }
+
+        address.setApplicantName(req.getApplicantName()); // ✅ Store it
 
         repository.save(address);
     }
 
-    public List<DealerAddress> getBusinessPlacesByAckNo(String ackNo) {
-        return repository.findByAckNo(new BigDecimal(ackNo));
+    public List<Map<String, Object>> getBusinessPlacesByAckNo(String ackNo) {
+        List<DealerAddress> records = repository.findByAckNo(new BigDecimal(ackNo));
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (DealerAddress a : records) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("applicationNumber", a.getAckNo().toPlainString());
+            map.put("applicantName", a.getApplicantName());
+            map.put("location", "W".equalsIgnoreCase(a.getBranchLoc()) ? "Within State" : "Outside State");
+            map.put("registrationNo", a.getRegCstAct());
+            map.put("underStateAct", a.getRegStateAct());
+            map.put("branchType", a.getBranchType());
+            map.put("name", a.getName());
+            map.put("street", a.getAddr1());
+            map.put("area", a.getAddr2());
+            map.put("city", a.getPlace());
+            map.put("district", DISTRICT_NAMES.getOrDefault(a.getDistCd(), ""));
+            map.put("state", a.getStCode());
+            map.put("pinCode", a.getPin() != null ? a.getPin().toPlainString() : null);
+            map.put("telephone", a.getPhone());
+            map.put("edrDate", a.getEdrAmendDate() != null ? a.getEdrAmendDate().toString() : null);
+
+            result.add(map);
+        }
+
+        return result;
     }
 }

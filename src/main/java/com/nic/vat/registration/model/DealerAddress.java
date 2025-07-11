@@ -63,5 +63,8 @@ public class DealerAddress {
     @Column(name = "edr_amend_date")
     private LocalDate edrAmendDate;
 
+    @Column(name = "appl_name_s") // Choose any available or new column name
+    private String applicantName;
+
 }
 
