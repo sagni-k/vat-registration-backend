@@ -9,11 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class PartBService {
@@ -131,19 +128,21 @@ public class PartBService {
 
         // Permanent Address
         Map<String, Object> permanentAddress = new HashMap<>();
-        permanentAddress.put("addressLine", dealer.getPermAddr());
-        permanentAddress.put("place", dealer.getPermPlace());
-        permanentAddress.put("distCd", dealer.getPermDistCd());
-        permanentAddress.put("stCode", dealer.getPermStCode());
-        permanentAddress.put("pin", dealer.getPermPin());
+        permanentAddress.put("street", dealer.getPermAddr());
+        permanentAddress.put("city", dealer.getPermPlace());
+        permanentAddress.put("district", dealer.getPermDistCd()); // optional
+        permanentAddress.put("state", dealer.getPermStCode());
+        permanentAddress.put("country", dealer.getPermCountry()); // if added
+        permanentAddress.put("pinCode", dealer.getPermPin());
 
         // Residential Address
         Map<String, Object> residentialAddress = new HashMap<>();
-        residentialAddress.put("addressLine", dealer.getResiAdd1());
-        residentialAddress.put("place", dealer.getResiPlace());
-        residentialAddress.put("distCd", dealer.getResiDistCd());
-        residentialAddress.put("stCode", dealer.getResiStCode());
-        residentialAddress.put("pin", dealer.getResiPin());
+        residentialAddress.put("street", dealer.getResiAdd1());
+        residentialAddress.put("city", dealer.getResiPlace());
+        residentialAddress.put("district", dealer.getResiDistCd()); // optional
+        residentialAddress.put("state", dealer.getResiStCode());
+        residentialAddress.put("country", dealer.getResiCountry()); // if added
+        residentialAddress.put("pinCode", dealer.getResiPin());
 
         // Commodity & Economic Info
         Map<String, Object> commodity = new HashMap<>();
@@ -152,8 +151,12 @@ public class PartBService {
 
         Map<String, Object> economicActivity = new HashMap<>();
         economicActivity.put("activityCode", dealer.getActivityCode());
+        economicActivity.put("roles", dealer.getEconomicRoles() != null
+                ? Arrays.asList(dealer.getEconomicRoles().split(","))
+                : new ArrayList<>());
 
         response.put("success", true);
+        response.put("statutoryAuthority", dealer.getStatutoryAuthority());
         response.put("permanentAddress", permanentAddress);
         response.put("residentialAddress", residentialAddress);
         response.put("commodity", commodity);
@@ -166,6 +169,7 @@ public class PartBService {
 
         return response;
     }
+
 
 
 
