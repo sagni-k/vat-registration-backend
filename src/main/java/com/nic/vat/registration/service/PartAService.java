@@ -142,4 +142,51 @@ public class PartAService {
 
         return map;
     }
+
+    public boolean updatePartA(PartARequest request) {
+        BigDecimal ack;
+        try {
+            ack = new BigDecimal(request.getApplicationNumber());
+        } catch (Exception e) {
+            return false; // invalid application number
+        }
+
+        DealerMaster dealer = dealerRepo.findByAckNo(ack).orElse(null);
+        if (dealer == null) return false;
+
+        dealer.setTradName(request.getTradingName());
+        dealer.setApplNameS(request.getApplicantName());
+        dealer.setFathName(request.getFathersName());
+        dealer.setDtBirth(LocalDate.parse(request.getDateOfBirth()));
+        dealer.setSex(request.getGender());
+        dealer.setPan(request.getPan());
+        dealer.setOffice(request.getOffice());
+        dealer.setRegType(request.getTypeOfRegistration());
+        dealer.setBusConstitution(request.getBusinessConstitution());
+
+        if (request.getContact() != null) {
+            dealer.setTelephone(request.getContact().getTelephone());
+            dealer.setFax(request.getContact().getFax());
+            dealer.setEmail(request.getContact().getEmail());
+            if (request.getContact().getMobile() != null) {
+                dealer.setMobile(new BigDecimal(request.getContact().getMobile()));
+            }
+        }
+
+        if (request.getAddress() != null) {
+            dealer.setPermAddr(request.getAddress().getRoomNo());
+            dealer.setPermPlace(request.getAddress().getVillage());
+            dealer.setPermArea(request.getAddress().getArea());
+            dealer.setPermDistrict(request.getAddress().getDistrict());
+            dealer.setPermOccupancyStatus(request.getAddress().getOccupancyStatus());
+
+            if (request.getAddress().getPinCode() != null) {
+                dealer.setPermPin(new BigDecimal(request.getAddress().getPinCode()));
+            }
+        }
+
+        dealerRepo.save(dealer);
+        return true;
+    }
+
 }

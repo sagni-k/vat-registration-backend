@@ -48,6 +48,16 @@ public class DealerMasterController {
         return ResponseEntity.ok(partA);
     }
 
+    @PutMapping("/part-a")
+    public ResponseEntity<?> updatePartA(@RequestBody PartARequest request) {
+        boolean success = partAService.updatePartA(request);
+        if (!success) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Invalid application number or record not found"));
+        }
+        return ResponseEntity.ok(Map.of("success", true, "message", "Part-A data updated successfully"));
+    }
+
+
 
 }
 
