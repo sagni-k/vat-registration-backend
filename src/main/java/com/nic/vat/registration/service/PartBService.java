@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
 import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class PartBService {
@@ -21,9 +21,22 @@ public class PartBService {
     @Autowired
     private DealerAddressRepository addressRepo;
 
+    // ✅ Utility: check if string is non-null & non-empty
     private boolean isValid(String val) {
         return val != null && !val.trim().isEmpty();
     }
+
+    // ✅ District name to code map
+    private static final Map<String, String> DISTRICT_NAME_TO_CODE = Map.ofEntries(
+            Map.entry("West Tripura", "1"),
+            Map.entry("Sepahijala", "2"),
+            Map.entry("Khowai", "3"),
+            Map.entry("Gomati", "4"),
+            Map.entry("South Tripura", "5"),
+            Map.entry("Dhalai", "6"),
+            Map.entry("North Tripura", "7"),
+            Map.entry("Unakoti", "8")
+    );
 
     public boolean savePartB(PartBRequest request) {
         BigDecimal ackNo;
@@ -38,30 +51,41 @@ public class PartBService {
 
         dealer.setStatutoryAuthority(request.getStatutoryAuthority());
 
+        // 🔸 Permanent Address
         if (request.getPermanentAddress() != null) {
             var perm = request.getPermanentAddress();
             dealer.setPermAddr(perm.getStreet());
             dealer.setPermPlace(perm.getCity());
             dealer.setPermStCode(perm.getState());
             dealer.setPermCountry(perm.getCountry());
-            if (isValid(perm.getDistrict()))
-                dealer.setPermDistCd(new BigDecimal(perm.getDistrict()));
+
+            String permDist = perm.getDistrict();
+            if (isValid(permDist) && DISTRICT_NAME_TO_CODE.containsKey(permDist)) {
+                dealer.setPermDistCd(new BigDecimal(DISTRICT_NAME_TO_CODE.get(permDist)));
+            }
+
             if (isValid(perm.getPinCode()))
                 dealer.setPermPin(new BigDecimal(perm.getPinCode()));
         }
 
+        // 🔸 Residential Address
         if (request.getResidentialAddress() != null) {
             var resi = request.getResidentialAddress();
             dealer.setResiAdd1(resi.getStreet());
             dealer.setResiPlace(resi.getCity());
             dealer.setResiStCode(resi.getState());
             dealer.setResiCountry(resi.getCountry());
-            if (isValid(resi.getDistrict()))
-                dealer.setResiDistCd(new BigDecimal(resi.getDistrict()));
+
+            String resiDist = resi.getDistrict();
+            if (isValid(resiDist) && DISTRICT_NAME_TO_CODE.containsKey(resiDist)) {
+                dealer.setResiDistCd(new BigDecimal(DISTRICT_NAME_TO_CODE.get(resiDist)));
+            }
+
             if (isValid(resi.getPinCode()))
                 dealer.setResiPin(new BigDecimal(resi.getPinCode()));
         }
 
+        // 🔸 Economic Activity
         if (request.getEconomicActivity() != null) {
             dealer.setActivityCode(request.getEconomicActivity().getActivityCode());
             if (request.getEconomicActivity().getRoles() != null) {
@@ -69,11 +93,13 @@ public class PartBService {
             }
         }
 
+        // 🔸 Commodity
         if (request.getCommodity() != null) {
             dealer.setCommodityName(request.getCommodity().getName());
             dealer.setCommodityDescription(request.getCommodity().getDescription());
         }
 
+        // 🔸 Misc
         if (isValid(request.getFirstTaxableSaleDate())) {
             try {
                 dealer.setFirstTaxableSaleDate(LocalDate.parse(request.getFirstTaxableSaleDate()));
@@ -89,7 +115,7 @@ public class PartBService {
 
         dealerRepo.save(dealer);
 
-        // Save branch addresses
+        // 🔸 Save Branch Addresses
         if (request.getBranchAddresses() != null) {
             List<DealerAddress> addresses = new ArrayList<>();
             int sno = 1;
@@ -117,19 +143,20 @@ public class PartBService {
         return true;
     }
 
+    // ✅ GET for /part-b
     public Map<String, Object> getPartBByAckNo(String ackNo) {
         BigDecimal ack = new BigDecimal(ackNo);
         DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
         List<DealerAddress> addresses = addressRepo.findByAckNo(ack);
 
         Map<String, Object> response = new HashMap<>();
-
         if (dealer == null) {
             response.put("success", false);
             response.put("message", "Dealer not found");
             return response;
         }
 
+        // Permanent Address
         Map<String, Object> permanentAddress = new HashMap<>();
         permanentAddress.put("street", dealer.getPermAddr());
         permanentAddress.put("city", dealer.getPermPlace());
@@ -138,6 +165,7 @@ public class PartBService {
         permanentAddress.put("country", dealer.getPermCountry());
         permanentAddress.put("pinCode", dealer.getPermPin());
 
+        // Residential Address
         Map<String, Object> residentialAddress = new HashMap<>();
         residentialAddress.put("street", dealer.getResiAdd1());
         residentialAddress.put("city", dealer.getResiPlace());
@@ -146,6 +174,7 @@ public class PartBService {
         residentialAddress.put("country", dealer.getResiCountry());
         residentialAddress.put("pinCode", dealer.getResiPin());
 
+        // Commodity & Economic Info
         Map<String, Object> commodity = new HashMap<>();
         commodity.put("name", dealer.getCommodityName());
         commodity.put("description", dealer.getCommodityDescription());
