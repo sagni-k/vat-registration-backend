@@ -40,26 +40,26 @@ public class PartBService {
 
         if (request.getPermanentAddress() != null) {
             var perm = request.getPermanentAddress();
-            dealer.setPermAddr(perm.getAddressLine());
-            dealer.setPermPlace(perm.getPlace());
-            dealer.setPermStCode(perm.getStCode());
+            dealer.setPermAddr(perm.getStreet());
+            dealer.setPermPlace(perm.getCity());
+            dealer.setPermStCode(perm.getState());
             dealer.setPermCountry(perm.getCountry());
-            if (isValid(perm.getDistCd()))
-                dealer.setPermDistCd(new BigDecimal(perm.getDistCd()));
-            if (isValid(perm.getPin()))
-                dealer.setPermPin(new BigDecimal(perm.getPin()));
+            if (isValid(perm.getDistrict()))
+                dealer.setPermDistCd(new BigDecimal(perm.getDistrict()));
+            if (isValid(perm.getPinCode()))
+                dealer.setPermPin(new BigDecimal(perm.getPinCode()));
         }
 
         if (request.getResidentialAddress() != null) {
             var resi = request.getResidentialAddress();
-            dealer.setResiAdd1(resi.getAddressLine());
-            dealer.setResiPlace(resi.getPlace());
-            dealer.setResiStCode(resi.getStCode());
+            dealer.setResiAdd1(resi.getStreet());
+            dealer.setResiPlace(resi.getCity());
+            dealer.setResiStCode(resi.getState());
             dealer.setResiCountry(resi.getCountry());
-            if (isValid(resi.getDistCd()))
-                dealer.setResiDistCd(new BigDecimal(resi.getDistCd()));
-            if (isValid(resi.getPin()))
-                dealer.setResiPin(new BigDecimal(resi.getPin()));
+            if (isValid(resi.getDistrict()))
+                dealer.setResiDistCd(new BigDecimal(resi.getDistrict()));
+            if (isValid(resi.getPinCode()))
+                dealer.setResiPin(new BigDecimal(resi.getPinCode()));
         }
 
         if (request.getEconomicActivity() != null) {
@@ -89,6 +89,7 @@ public class PartBService {
 
         dealerRepo.save(dealer);
 
+        // Save branch addresses
         if (request.getBranchAddresses() != null) {
             List<DealerAddress> addresses = new ArrayList<>();
             int sno = 1;
