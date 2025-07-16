@@ -21,20 +21,26 @@ public class PartnerService {
         try {
             BigDecimal ackNo = new BigDecimal(request.getApplicationNumber());
 
-            // Auto-generate next sno for the given ackNo
-            BigDecimal maxSno = partnerRepository.findMaxSnoByAckNo(ackNo);
-            BigDecimal newSno = maxSno.add(BigDecimal.ONE);
+            // ✅ Check if a partner with same PAN and ACK already exists
+            List<DealerPartner> existingPartners = partnerRepository.findByAckNo(ackNo);
+            DealerPartner existing = existingPartners.stream()
+                    .filter(p -> request.getPan().equalsIgnoreCase(p.getPan()))
+                    .findFirst()
+                    .orElse(null);
 
-            DealerPartner partner = new DealerPartner();
-            partner.setAckNo(ackNo);
-            partner.setSno(newSno);
+            DealerPartner partner = (existing != null) ? existing : new DealerPartner();
+
+            if (existing == null) {
+                BigDecimal maxSno = partnerRepository.findMaxSnoByAckNo(ackNo);
+                BigDecimal newSno = maxSno.add(BigDecimal.ONE);
+                partner.setAckNo(ackNo);
+                partner.setSno(newSno);
+            }
+
             partner.setPartnerType(request.getPartnerType());
             partner.setName(request.getName());
             partner.setFathersName(request.getFathersName());
-
-            // Optional fields
-            if (request.getDateOfBirth() != null)
-                partner.setDateOfBirth(LocalDate.parse(request.getDateOfBirth()));
+            partner.setDateOfBirth(LocalDate.parse(request.getDateOfBirth()));
             partner.setDesignation(request.getDesignation());
             partner.setQualification(request.getQualification());
             partner.setPan(request.getPan());
@@ -43,17 +49,14 @@ public class PartnerService {
             partner.setVillage(request.getVillage());
             partner.setPermanentAddress1(request.getPermanentAddress());
 
-            // Contact
             if (request.getContact() != null) {
                 partner.setTelephone(request.getContact().getTelephone());
                 partner.setFax(request.getContact().getFax());
                 partner.setEmail(request.getContact().getEmail());
             }
 
-            // Interest %
             partner.setInterestPercent(request.getInterestPercent());
 
-            // Partnership Dates
             if (request.getPartnershipDates() != null) {
                 if (request.getPartnershipDates().getEntryDate() != null)
                     partner.setEntryDate(LocalDate.parse(request.getPartnershipDates().getEntryDate()));
@@ -61,7 +64,6 @@ public class PartnerService {
                     partner.setExitDate(LocalDate.parse(request.getPartnershipDates().getExitDate()));
             }
 
-            // Electoral details
             if (request.getElectoralDetails() != null) {
                 partner.setVoterId(request.getElectoralDetails().getVoterId());
                 partner.setResidentialCertNo(request.getElectoralDetails().getResidentialCertNo());
@@ -74,6 +76,7 @@ public class PartnerService {
             return false;
         }
     }
+
 
     public List<PartnerResponse> getPartnersByAckNo(String ackNo) {
         BigDecimal ack = new BigDecimal(ackNo);
