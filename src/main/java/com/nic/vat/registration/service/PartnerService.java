@@ -2,6 +2,7 @@ package com.nic.vat.registration.service;
 
 import com.nic.vat.registration.model.DealerPartner;
 import com.nic.vat.registration.model.dto.PartnerRequest;
+import com.nic.vat.registration.model.dto.PartnerResponse;
 import com.nic.vat.registration.repository.DealerPartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,9 +75,45 @@ public class PartnerService {
         }
     }
 
-    public List<DealerPartner> getPartnersByAckNo(String ackNo) {
-        return partnerRepository.findByAckNo(new BigDecimal(ackNo));
+    public List<PartnerResponse> getPartnersByAckNo(String ackNo) {
+        BigDecimal ack = new BigDecimal(ackNo);
+        List<DealerPartner> entities = partnerRepository.findByAckNo(ack);
+
+        return entities.stream().map(partner -> {
+            PartnerResponse dto = new PartnerResponse();
+            dto.setPartnerType(partner.getPartnerType());
+            dto.setName(partner.getName());
+            dto.setFathersName(partner.getFathersName());
+            dto.setDateOfBirth(partner.getDateOfBirth() != null ? partner.getDateOfBirth().toString() : null);
+            dto.setDesignation(partner.getDesignation());
+            dto.setQualification(partner.getQualification());
+            dto.setPan(partner.getPan());
+            dto.setPresentAddress(partner.getAddressLine1());
+            dto.setArea(partner.getArea());
+            dto.setVillage(partner.getVillage());
+            dto.setPermanentAddress(partner.getPermanentAddress1());
+            dto.setInterestPercent(partner.getInterestPercent());
+
+            PartnerResponse.ContactDTO contact = new PartnerResponse.ContactDTO();
+            contact.setTelephone(partner.getTelephone());
+            contact.setFax(partner.getFax());
+            contact.setEmail(partner.getEmail());
+            dto.setContact(contact);
+
+            PartnerResponse.PartnershipDatesDTO dates = new PartnerResponse.PartnershipDatesDTO();
+            dates.setEntryDate(partner.getEntryDate() != null ? partner.getEntryDate().toString() : null);
+            dates.setExitDate(partner.getExitDate() != null ? partner.getExitDate().toString() : null);
+            dto.setPartnershipDates(dates);
+
+            PartnerResponse.ElectoralDetailsDTO electoral = new PartnerResponse.ElectoralDetailsDTO();
+            electoral.setVoterId(partner.getVoterId());
+            electoral.setResidentialCertNo(partner.getResidentialCertNo());
+            dto.setElectoralDetails(electoral);
+
+            return dto;
+        }).toList();
     }
+
 }
 
 

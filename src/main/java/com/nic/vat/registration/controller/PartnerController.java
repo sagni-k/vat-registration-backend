@@ -36,8 +36,9 @@ public class PartnerController {
 
     @GetMapping("/partner")
     public ResponseEntity<?> getPartners(@RequestParam("applicationNumber") String applicationNumber) {
-        List<DealerPartner> partners = partnerService.getPartnersByAckNo(applicationNumber);
+        List<PartnerResponse> partners = partnerService.getPartnersByAckNo(applicationNumber);
         return ResponseEntity.ok(partners);
     }
+
 }
 
