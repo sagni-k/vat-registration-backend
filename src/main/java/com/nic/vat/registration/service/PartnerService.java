@@ -69,6 +69,20 @@ public class PartnerService {
                 partner.setResidentialCertNo(request.getElectoralDetails().getResidentialCertNo());
             }
 
+            if (request.getUploadedDocument() != null) {
+                if (request.getUploadedDocument().getIdProof() != null) {
+                    partner.setDocIdName(request.getUploadedDocument().getIdProof().getName());
+                    partner.setDocIdType(request.getUploadedDocument().getIdProof().getType());
+                    partner.setDocIdSize(request.getUploadedDocument().getIdProof().getSize());
+                }
+                if (request.getUploadedDocument().getAddressProof() != null) {
+                    partner.setDocAddrName(request.getUploadedDocument().getAddressProof().getName());
+                    partner.setDocAddrType(request.getUploadedDocument().getAddressProof().getType());
+                    partner.setDocAddrSize(request.getUploadedDocument().getAddressProof().getSize());
+                }
+            }
+
+
             partnerRepository.save(partner);
             return true;
 
@@ -113,9 +127,27 @@ public class PartnerService {
             electoral.setResidentialCertNo(partner.getResidentialCertNo());
             dto.setElectoralDetails(electoral);
 
+            // 🔻 New block: document metadata
+            PartnerResponse.UploadedDocument uploaded = new PartnerResponse.UploadedDocument();
+
+            PartnerResponse.DocumentMeta idProof = new PartnerResponse.DocumentMeta();
+            idProof.setName(partner.getDocIdName());
+            idProof.setType(partner.getDocIdType());
+            idProof.setSize(partner.getDocIdSize() != null ? partner.getDocIdSize() : 0L);
+            uploaded.setIdProof(idProof);
+
+            PartnerResponse.DocumentMeta addressProof = new PartnerResponse.DocumentMeta();
+            addressProof.setName(partner.getDocAddrName());
+            addressProof.setType(partner.getDocAddrType());
+            addressProof.setSize(partner.getDocAddrSize() != null ? partner.getDocAddrSize() : 0L);
+            uploaded.setAddressProof(addressProof);
+
+            dto.setUploadedDocument(uploaded);
+
             return dto;
         }).toList();
     }
+
 
 }
 

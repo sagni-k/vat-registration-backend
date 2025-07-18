@@ -82,6 +82,27 @@ public class DealerPartner {
 
     @Column(name = "p_dt_lv_pship")
     private LocalDate exitDate;
+
+
+
+    @Column(name = "doc_id_name")
+    private String docIdName;
+
+    @Column(name = "doc_id_type")
+    private String docIdType;
+
+    @Column(name = "doc_id_size")
+    private Long docIdSize;
+
+    @Column(name = "doc_addr_name")
+    private String docAddrName;
+
+    @Column(name = "doc_addr_type")
+    private String docAddrType;
+
+    @Column(name = "doc_addr_size")
+    private Long docAddrSize;
+
 }
 
 

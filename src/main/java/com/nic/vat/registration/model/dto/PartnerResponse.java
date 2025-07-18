@@ -22,6 +22,7 @@ public class PartnerResponse {
     private BigDecimal interestPercent;
     private PartnershipDatesDTO partnershipDates;
     private ElectoralDetailsDTO electoralDetails;
+    private UploadedDocument uploadedDocument;
 
     @Data
     public static class ContactDTO {
@@ -40,5 +41,17 @@ public class PartnerResponse {
     public static class ElectoralDetailsDTO {
         private String voterId;
         private String residentialCertNo;
+    }
+
+    @Data
+    public static class UploadedDocument {
+        private DocumentMeta idProof;
+        private DocumentMeta addressProof;
+    }
+    @Data
+    public static class DocumentMeta {
+        private String name;
+        private String type;
+        private long size;
     }
 }
