@@ -94,14 +94,18 @@ public class DealerPartner {
     @Column(name = "doc_id_size")
     private Long docIdSize;
 
+    @Lob
+    private byte[] docIdFile;
+
     @Column(name = "doc_addr_name")
     private String docAddrName;
-
     @Column(name = "doc_addr_type")
     private String docAddrType;
-
     @Column(name = "doc_addr_size")
     private Long docAddrSize;
+    @Column(name = "doc_addr_file")
+    @Lob
+    private byte[] docAddrFile;
 
 }
 

@@ -4,9 +4,13 @@ import com.nic.vat.registration.model.DealerPartner;
 import com.nic.vat.registration.model.dto.PartnerRequest;
 import com.nic.vat.registration.model.dto.PartnerResponse;
 import com.nic.vat.registration.repository.DealerPartnerRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,11 +21,10 @@ public class PartnerService {
     @Autowired
     private DealerPartnerRepository partnerRepository;
 
-    public boolean savePartner(PartnerRequest request) {
+    public boolean savePartner(PartnerRequest request, MultipartFile idProof, MultipartFile addrProof) {
         try {
             BigDecimal ackNo = new BigDecimal(request.getApplicationNumber());
 
-            // ✅ Check if a partner with same PAN and ACK already exists
             List<DealerPartner> existingPartners = partnerRepository.findByAckNo(ackNo);
             DealerPartner existing = existingPartners.stream()
                     .filter(p -> request.getPan().equalsIgnoreCase(p.getPan()))
@@ -69,28 +72,28 @@ public class PartnerService {
                 partner.setResidentialCertNo(request.getElectoralDetails().getResidentialCertNo());
             }
 
-            if (request.getUploadedDocument() != null) {
-                if (request.getUploadedDocument().getIdProof() != null) {
-                    partner.setDocIdName(request.getUploadedDocument().getIdProof().getName());
-                    partner.setDocIdType(request.getUploadedDocument().getIdProof().getType());
-                    partner.setDocIdSize(request.getUploadedDocument().getIdProof().getSize());
-                }
-                if (request.getUploadedDocument().getAddressProof() != null) {
-                    partner.setDocAddrName(request.getUploadedDocument().getAddressProof().getName());
-                    partner.setDocAddrType(request.getUploadedDocument().getAddressProof().getType());
-                    partner.setDocAddrSize(request.getUploadedDocument().getAddressProof().getSize());
-                }
+            if (idProof != null) {
+                partner.setDocIdName(idProof.getOriginalFilename());
+                partner.setDocIdType(idProof.getContentType());
+                partner.setDocIdSize(idProof.getSize());
+                partner.setDocIdFile(idProof.getBytes());
             }
 
+            if (addrProof != null) {
+                partner.setDocAddrName(addrProof.getOriginalFilename());
+                partner.setDocAddrType(addrProof.getContentType());
+                partner.setDocAddrSize(addrProof.getSize());
+                partner.setDocAddrFile(addrProof.getBytes());
+            }
 
             partnerRepository.save(partner);
             return true;
 
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
-
 
     public List<PartnerResponse> getPartnersByAckNo(String ackNo) {
         BigDecimal ack = new BigDecimal(ackNo);
@@ -127,7 +130,6 @@ public class PartnerService {
             electoral.setResidentialCertNo(partner.getResidentialCertNo());
             dto.setElectoralDetails(electoral);
 
-            // 🔻 New block: document metadata
             PartnerResponse.UploadedDocument uploaded = new PartnerResponse.UploadedDocument();
 
             PartnerResponse.DocumentMeta idProof = new PartnerResponse.DocumentMeta();
@@ -136,19 +138,50 @@ public class PartnerService {
             idProof.setSize(partner.getDocIdSize() != null ? partner.getDocIdSize() : 0L);
             uploaded.setIdProof(idProof);
 
-            PartnerResponse.DocumentMeta addressProof = new PartnerResponse.DocumentMeta();
-            addressProof.setName(partner.getDocAddrName());
-            addressProof.setType(partner.getDocAddrType());
-            addressProof.setSize(partner.getDocAddrSize() != null ? partner.getDocAddrSize() : 0L);
-            uploaded.setAddressProof(addressProof);
+            PartnerResponse.DocumentMeta addrProof = new PartnerResponse.DocumentMeta();
+            addrProof.setName(partner.getDocAddrName());
+            addrProof.setType(partner.getDocAddrType());
+            addrProof.setSize(partner.getDocAddrSize() != null ? partner.getDocAddrSize() : 0L);
+            uploaded.setAddressProof(addrProof);
 
             dto.setUploadedDocument(uploaded);
-
             return dto;
         }).toList();
     }
 
+    public void writeFileToResponse(String ackNo, String pan, String fileType, HttpServletResponse response) throws IOException {
+        BigDecimal ack = new BigDecimal(ackNo);
+        DealerPartner partner = partnerRepository.findByAckNo(ack).stream()
+                .filter(p -> pan.equalsIgnoreCase(p.getPan()))
+                .findFirst()
+                .orElse(null);
 
+        if (partner == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        byte[] fileBytes;
+        String fileName;
+        String contentType;
+
+        if (fileType.equals("id")) {
+            fileBytes = partner.getDocIdFile();
+            fileName = partner.getDocIdName();
+            contentType = partner.getDocIdType();
+        } else {
+            fileBytes = partner.getDocAddrFile();
+            fileName = partner.getDocAddrName();
+            contentType = partner.getDocAddrType();
+        }
+
+        if (fileBytes == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+
+        response.setContentType(contentType);
+        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+        StreamUtils.copy(fileBytes, response.getOutputStream());
+    }
 }
-
-
