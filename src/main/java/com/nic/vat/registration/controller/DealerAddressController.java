@@ -34,8 +34,9 @@ public class DealerAddressController {
     }
     @GetMapping("/additional-business-place")
     public ResponseEntity<?> getBusinessPlaces(@RequestParam("applicationNumber") String applicationNumber) {
-        List<DealerAddress> businessPlaces = dealerAddressService.getBusinessPlacesByAckNo(applicationNumber);
+        List<Map<String, Object>> businessPlaces = dealerAddressService.getBusinessPlacesByAckNo(applicationNumber);
         return ResponseEntity.ok(businessPlaces);
     }
+
 
 }

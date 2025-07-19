@@ -1,215 +1,117 @@
-# Tax_NIC
+# 🌐 Tripura VAT Registration Backend
 
-# VAT Registration Backend – Internship Project (NIC Tripura)
+This is the complete backend system for **Tripura’s upcoming VAT Registration Portal**, built during my internship at **NIC Tripura** (Ministry of Electronics & IT, Govt. of India). The system is intended to power **real-world tax workflows** and will be integrated into the **official state-wide application**.
 
-This backend application is built using **Spring Boot** and **PostgreSQL** to support the **VAT registration process** for NIC Tripura. The system is modularized to support multiple parts of registration (Part A, B, etc.), with the current focus on implementing **Part A**.
 
----
+## 🚀 Project Highlights
 
-## ✅ Status Summary
-
-| Component             | Status   | Notes                                      |
-|----------------------|----------|--------------------------------------------|
-| Database connection  | ✅ Done   | Connected to `vatdb`, schema `tvat`        |
-| DTO Design           | ✅ Done   | Request-mapped DTOs created for Part A     |
-| Entity Mapping       | ✅ Done   | Partial mapping of `web_trn_dlr_mst`       |
-| API Implementation   | ✅ Done   | `POST /registration/part-a` tested & live |
-| Application Number   | ✅ Mocked | Dummy number returned                      |
-| Password Generation  | ✅ Mocked | Dummy password returned                    |
-| Data Persistence     | ✅ Done   | Saved to `web_trn_dlr_mst`                 |
-| Error Handling       | 🟡 Basic | Currently logs server errors only          |
-| Validation           | 🔴 TODO   | Field-level validation not yet implemented |
+- 🔐 **Secure RESTful APIs** using Spring Boot
+- 🧾 **Modular multi-step form** registration (Parts A–C, Bank, Documents, Partners, etc.)
+- 🔑 **JWT-based authentication** for session management
+- 🗂️ **File upload & storage in PostgreSQL** using `@Lob` (e.g., Aadhaar, Electricity Bills)
+- 🔄 **Dynamic max-SNO logic** for record insertion
+- 🧩 **Clean DTO ↔ Entity mapping** using layered architecture
+- 🌐 **Hosted on Render** for production access
 
 ---
 
-## 🛠️ Tech Stack
+## 🧱 Tech Stack
 
-- **Language**: Java 17
-- **Framework**: Spring Boot 3.5.3
-- **ORM**: Hibernate (JPA)
-- **Database**: PostgreSQL 14 (local)
-- **Build Tool**: Maven
-- **Dependencies**:
-    - `lombok` – Auto-generate getters/setters
-    - `spring-boot-starter-data-jpa`
-    - `spring-boot-starter-web`
-    - `spring-boot-starter-validation`
-    - `postgresql` driver
+| Layer              | Tech Used                          |
+|--------------------|------------------------------------|
+| **Backend**        | Spring Boot (Java)                 |
+| **Database**       | PostgreSQL (NIC’s `tvat` schema)   |
+| **Authentication** | JWT (JSON Web Token)               |
+| **Deployment**     | Render.com                         |
+| **API Style**      | RESTful, stateless                 |
 
 ---
 
-## 📡 API: Part A Registration
+## 🧭 API Modules
 
-**Endpoint**:  
-`POST /registration/part-a`
+### 📌 Authentication
 
-**Purpose**:  
-Saves applicant’s basic info from the Part A registration form, generates application number & password, and persists it to the DB.
+- `POST /auth/login` – Verifies app number, password, captcha → returns JWT token
 
-**Request Payload**:
+### 🧍 Part-A: Applicant Info
 
-```json
-{
-  "typeOfRegistration": "VOLUNTARY",
-  "office": "HeadQuarter",
-  "businessConstitution": "Proprietary",
-  "applicantName": "Ravi Kumar",
-  "fathersName": "Mahesh Kumar",
-  "dateOfBirth": "1990-05-15",
-  "gender": "M",
-  "tradingName": "Ravi Electronics",
-  "pan": "FRTRT5766K",
-  "address": {
-    "roomNo": "ROOM 1",
-    "area": "AREA 1",
-    "village": "VILLAGE 1",
-    "district": "Dhalai",
-    "pinCode": "799001",
-    "occupancyStatus": "Owned"
-  },
-  "contact": {
-    "telephone": "0361-2251234",
-    "fax": "",
-    "email": "ravi@example.com",
-    "mobile": "9999999999"
-  }
-  
-}
-```
+- `POST /registration/part-a` – Registers new user → returns app number & password
+- `PUT /registration/part-a` – Updates existing application
+- `GET /registration/part-a` – Fetches saved info
 
-**Response**:
-```json
+### 🧾 Multi-step Form APIs
 
-{
-  "success": true,
-  "applicationNumber": "202400318526",
-  "password": "XyZ@1234",
-  "message": "Registration successful. Check your email and mobile for credentials."
-}
+- `POST /registration/part-b`, `part-c`, `bank-info`, `partner`, `documents`
+- Each step saves independently and uses JWT token
 
-```
+### 📁 File Upload & Retrieval
 
+- Uploads stored in DB as binary (`@Lob`) with MIME type & metadata
+- Retrieval supports metadata & document streaming via download endpoints
 
-🧱 Internal Architecture
-1. DTOs
+---
 
-Stored inside: com.nic.vat.registration.model.dto
+## 🧠 Architecture Overview
 
-    PartARequest.java
+The system uses a **layered, maintainable backend structure**:
 
-    AddressDTO.java
+- **DTO Layer** – Accepts well-structured requests from frontend
+- **Entity Layer** – Maps to NIC’s official PostgreSQL schema
+- **Service Layer** – Handles logic (insertion/update with max-SNO, validation, etc.)
+- **Controller Layer** – Defines token-authenticated endpoints using `@RestController`
 
-    ContactDTO.java
+---
 
-These classes deserialize the JSON input and separate input structure from DB entity.
-2. Entity
+## 🔐 JWT Authentication
 
-Stored inside: com.nic.vat.registration.model
-DealerMaster.java
+- Users receive a token upon login
+- Token is sent in headers (`Authorization: Bearer <token>`) for all further steps
+- Stateless security — no server-side sessions
 
-Mapped to the tvat.web_trn_dlr_mst table. Only relevant fields from the Part A schema are currently mapped to avoid complexity and ensure atomic testing.
+---
 
-@Entity
-@Table(name = "web_trn_dlr_mst", schema = "tvat")
-public class DealerMaster {
-    @Id
-    @Column(name = "ack_no")
-    private BigDecimal ackNo;
+## 📂 File Upload Logic
 
-    @Column(name = "trad_name")
-    private String tradName;
+- Only valid MIME types (PDF, JPEG, PNG) accepted
+- Files like Aadhaar & Electricity Bill stored as byte arrays
+- Metadata (name, type, size) is returned in API response
+- Documents viewable via `/download/...` endpoints
 
-    @Column(name = "fath_name")
-    private String fathName;
+---
 
-    // ... and other mapped fields based on Part A form
-}
+## 💡 Advanced Features
 
-3. Repository
+- ✅ Dynamic max-SNO record management (used in Partner module)
+- ✅ Dual-mode form support (initial + update, e.g., in Part-A)
+- ✅ DTO nesting for clean handling of complex objects (e.g., contact, address)
+- ✅ Fully integrated with live frontend for UAT testing
 
-Stored inside: com.nic.vat.registration.repository
+---
 
-@Repository
-public interface DealerMasterRepository extends JpaRepository<DealerMaster, BigDecimal> {
-}
+## 📦 Deployment
 
-4. Service
+- 🖥️ Backend deployed on: [Render.com](https://render.com)
+- 📍 PostgreSQL hosted database (NIC's `tvat` schema)
 
-Stored inside: com.nic.vat.registration.service
-Method: savePartA(PartARequest request)
+---
 
-    Converts DTO → Entity
+## 👨‍💻 Maintainer
 
-    Generates mock ackNo and password
+**Sagnik Karmakar**  
+Backend Developer Intern, NIC Tripura  
+[LinkedIn](https://www.linkedin.com/in/sagnik-karmakar-535235261/) | [GitHub](https://github.com/sagni-k)
 
-    Saves to DB via DealerMasterRepository
+---
 
-    Returns credentials to frontend
+## 📸 Demo Links
 
-🔄 Example Flow
+- 🔗 **Live Frontend**: [https://vat-registration-frontend.vercel.app/]
+- 📂 **Backend GitHub Repo**: [https://github.com/sagni-k/vat-registration-backend]
+- 🎥 **Video Walkthrough**: [Insert YouTube Link]
 
-    Frontend sends POST request to /registration/part-a with JSON body.
+---
 
-    DTO maps the body using Jackson.
+## 📜 License
 
-    Service generates mock values.
+This project was developed under the guidance of NIC Tripura for government use. All source code and database structures conform to NIC’s internal guidelines and schemas.
 
-    Hibernate persists DealerMaster entity to the PostgreSQL table.
-
-    JSON response with status 200 is sent back.
-
-🧪 Testing Environment
-Component	Setup
-OS	Ubuntu 22.04
-DB GUI	psql CLI & IntelliJ Data Tab
-Testing Tool	Postman / IntelliJ HTTP Client
-Debugging	Logs + SQL Console
-🗂 Table Schema
-
-Table: tvat.web_trn_dlr_mst
-Primary Key: ack_no
-Fields used in Part A:
-
-    trad_name
-
-    fath_name
-
-    dt_birth
-
-    sex
-
-    pan
-
-    mobile
-
-    email
-
-    perm_addr, perm_place, perm_pin, perm_dist_cd
-
-    resi_add1, resi_place, resi_pin, resi_dist_cd
-
-    etc.
-
-🧹 Dev Notes
-
-    ✅ Manually created the tvat.web_trn_dlr_mst table in PostgreSQL
-
-    ✅ Synced schema and column names with DB
-
-    ✅ Fixed column-mapping issues (trad_name, sex, ack_date)
-
-    ⚠️ All data types aligned with DB spec (BigDecimal, LocalDate, etc.)
-
-🔜 Next Goals
-
-    ⬜ Add field-level validations using javax.validation annotations
-
-    ⬜ Send actual email and SMS using external services
-
-    ⬜ Add exception handling and custom error responses
-
-    ⬜ Develop Part B form API
-
-    ⬜ Add Swagger documentation
-
-    ⬜ Write JUnit + Mockito test cases

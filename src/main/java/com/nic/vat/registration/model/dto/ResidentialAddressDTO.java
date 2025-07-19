@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class ResidentialAddressDTO {
-    private String addressLine;
-    private String place;
-    private String distCd;
-    private String stCode;
-    private String pin;
+    private String street;     // maps to: resiAdd1
+    private String city;       // maps to: resiPlace
+    private String district;   // maps to: resiDistCd
+    private String state;      // maps to: resiStCode
+    private String country;    // maps to: resiCountry
+    private String pinCode;    // maps to: resiPin
 }
-

@@ -1,8 +1,11 @@
 package com.nic.vat.registration.model.dto;
+
 import lombok.Data;
+
 @Data
 public class PartARequest {
 
+    private String applicationNumber; // ✅ Added for PUT API
     private String typeOfRegistration;
     private String office;
     private String businessConstitution;
@@ -14,7 +17,4 @@ public class PartARequest {
     private String pan;
     private AddressDTO address;
     private ContactDTO contact;
-
-    // Getters and setters
-
 }

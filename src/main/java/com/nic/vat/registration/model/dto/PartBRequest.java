@@ -6,13 +6,20 @@ import java.math.BigDecimal;
 
 @Data
 public class PartBRequest {
-
     private String applicationNumber;
+    private String statutoryAuthority;
 
     private PermanentAddressDTO permanentAddress;
     private ResidentialAddressDTO residentialAddress;
 
     private List<BranchAddressDTO> branchAddresses;
+    private EconomicActivityDTO economicActivity;
+    private CommodityDTO commodity;
+
+    private String firstTaxableSaleDate;
+    private String vatOption;
+    private BigDecimal estimatedTurnover;
+    private String filingFrequency;
 
     @Data
     public static class BranchAddressDTO {
@@ -25,12 +32,6 @@ public class PartBRequest {
         private String pin;
         private String phone;
     }
-    private EconomicActivityDTO economicActivity;
-    private CommodityDTO commodity;
-    private String firstTaxableSaleDate;
-    private String vatOption;
-    private BigDecimal estimatedTurnover;
-    private String filingFrequency;
-
 }
+
 

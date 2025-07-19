@@ -41,5 +41,9 @@ public class BankInfoController {
         return ResponseEntity.ok(bankInfoService.getBankInfoByAckNo(applicationNumber));
     }
 
+
+
+
     record ApiResponse(boolean success, String message) {}
+
 }

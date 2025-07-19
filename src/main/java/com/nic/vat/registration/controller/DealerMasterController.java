@@ -41,8 +41,23 @@ public class DealerMasterController {
 
     @GetMapping("/part-a")
     public ResponseEntity<?> getPartA(@RequestParam("applicationNumber") String applicationNumber) {
-        return ResponseEntity.ok(partAService.getPartAByAckNo(applicationNumber));
+        Map<String, Object> partA = partAService.getPartAFields(applicationNumber);
+        if (partA == null) {
+            return ResponseEntity.status(404).body(Map.of("message", "No data found"));
+        }
+        return ResponseEntity.ok(partA);
     }
+
+    @PutMapping("/part-a")
+    public ResponseEntity<?> updatePartA(@RequestBody PartARequest request) {
+        boolean success = partAService.updatePartA(request);
+        if (!success) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Invalid application number or record not found"));
+        }
+        return ResponseEntity.ok(Map.of("success", true, "message", "Part-A data updated successfully"));
+    }
+
+
 
 }
 

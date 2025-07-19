@@ -50,6 +50,13 @@ public class DealerRegistrationService {
 
             dealer.setIsIndian(request.getIsIndianCitizen() != null && request.getIsIndianCitizen() ? "Y" : "N");
 
+            dealer.setAccountLang(request.getAccountLanguage());
+
+            if (request.getDeclaration() != null) {
+                dealer.setDeclareName(request.getDeclaration().getApplicantName());
+                dealer.setDeclareDesignation(request.getDeclaration().getDesignation());
+            }
+
             dealerRepo.save(dealer);
             logger.info("Part-C saved successfully for applicationNumber: {}", request.getApplicationNumber());
 
@@ -63,7 +70,6 @@ public class DealerRegistrationService {
 
         return response;
     }
-
     public Map<String, Object> getPartCByAckNo(String ackNo) {
         logger.info("Fetching Part-C for applicationNumber: {}", ackNo);
         Map<String, Object> response = new HashMap<>();
@@ -78,10 +84,39 @@ public class DealerRegistrationService {
                 return response;
             }
 
+            response.put("applicationNumber", dealer.getAckNo().toString());
             response.put("centralExciseRegNo", dealer.getRegCentralExcise());
             response.put("tradeLicenseNo", dealer.getTradeLicenseNo());
+            response.put("tradeLicenseIssueDate", dealer.getTradeLicenseIssueDate());
+            response.put("tradeLicenseRenewalDate", dealer.getTradeLicenseRenewalDate());
+            response.put("accountLanguage", dealer.getAccountLang()); // if stored
+            response.put("accountingYearFrom", dealer.getAccYearFrom());
+            response.put("accountingYearTo", dealer.getAccYearTo());
+            response.put("saleLastQuarter", dealer.getSaleLastQuarter());
+            response.put("saleLastYear", dealer.getSaleLastYear());
+
+            // Shop License nested object
+            Map<String, Object> shopLicense = new HashMap<>();
+            shopLicense.put("licenseNo", dealer.getShopLicenseNo());
+            shopLicense.put("issueDate", dealer.getShopLicenseIssueDate());
+            response.put("shopLicense", shopLicense);
+
+            // Food License nested object
+            Map<String, Object> foodLicense = new HashMap<>();
+            foodLicense.put("licenseNo", dealer.getFoodLicenseNo());
+            foodLicense.put("issueDate", dealer.getFoodLicenseIssueDate());
+            response.put("foodLicense", foodLicense);
+
+            // isIndianCitizen
             response.put("isIndianCitizen", "Y".equalsIgnoreCase(dealer.getIsIndian()));
 
+            // Declaration nested object
+            Map<String, Object> declaration = new HashMap<>();
+            declaration.put("applicantName", dealer.getDeclareName());
+            declaration.put("designation", dealer.getDeclareDesignation());
+            response.put("declaration", declaration);
+
+            logger.info("Part-C fetched successfully for applicationNumber: {}", ackNo);
         } catch (Exception e) {
             logger.error("Error fetching Part C for {}: {}", ackNo, e.getMessage());
             response.put("error", "Invalid application number");
@@ -89,4 +124,5 @@ public class DealerRegistrationService {
 
         return response;
     }
+
 }

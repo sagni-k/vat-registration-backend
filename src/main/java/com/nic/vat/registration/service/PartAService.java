@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 public class PartAService {
@@ -44,6 +44,8 @@ public class PartAService {
         dealer.setOffice(request.getOffice());
         dealer.setRegType(request.getTypeOfRegistration());
 
+        dealer.setBusConstitution(request.getBusinessConstitution()); // ✅ Save businessConstitution
+
         // Contact and Address fields
         if (request.getContact() != null) {
             dealer.setTelephone(request.getContact().getTelephone());
@@ -60,6 +62,11 @@ public class PartAService {
             if (request.getAddress().getPinCode() != null) {
                 dealer.setPermPin(new BigDecimal(request.getAddress().getPinCode()));
             }
+
+            // ✅ Save extra address fields
+            dealer.setPermArea(request.getAddress().getArea());
+            dealer.setPermDistrict(request.getAddress().getDistrict());
+            dealer.setPermOccupancyStatus(request.getAddress().getOccupancyStatus());
         }
 
         // Save dealer
@@ -99,26 +106,87 @@ public class PartAService {
 
         return password.toString();
     }
-    public Map<String, Object> getPartAByAckNo(String ackNo) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            BigDecimal ack = new BigDecimal(ackNo);
-            DealerMaster dealer = dealerRepo.findById(ack).orElse(null);
-            if (dealer == null) {
-                response.put("error", "Dealer not found");
-                return response;
-            }
 
-            response.put("applicantName", dealer.getApplNameS());
-            response.put("tradingName", dealer.getTradName());
-            response.put("pan", dealer.getPan());
-            return response;
+    public Map<String, Object> getPartAFields(String ackNo) {
+        DealerMaster dealer = dealerRepo.findByAckNo(new BigDecimal(ackNo)).orElse(null);
+        if (dealer == null) return null;
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("typeOfRegistration", dealer.getRegType());
+        map.put("office", dealer.getOffice());
+        map.put("businessConstitution", dealer.getBusConstitution()); // ✅ Return stored value
+        map.put("applicantName", dealer.getApplNameS());
+        map.put("fathersName", dealer.getFathName());
+        map.put("dateOfBirth", dealer.getDtBirth() != null ? dealer.getDtBirth().toString() : null);
+        map.put("gender", dealer.getSex());
+        map.put("tradingName", dealer.getTradName());
+        map.put("pan", dealer.getPan());
+
+        // Address
+        Map<String, String> address = new HashMap<>();
+        address.put("roomNo", dealer.getPermAddr());
+        address.put("village", dealer.getPermPlace());
+        address.put("pinCode", dealer.getPermPin() != null ? dealer.getPermPin().toString() : null);
+        address.put("area", dealer.getPermArea());
+        address.put("district", dealer.getPermDistrict());
+        address.put("occupancyStatus", dealer.getPermOccupancyStatus());
+        map.put("address", address);
+
+        // Contact
+        Map<String, String> contact = new HashMap<>();
+        contact.put("telephone", dealer.getTelephone());
+        contact.put("fax", dealer.getFax());
+        contact.put("email", dealer.getEmail());
+        contact.put("mobile", dealer.getMobile() != null ? dealer.getMobile().toString() : null);
+        map.put("contact", contact);
+
+        return map;
+    }
+
+    public boolean updatePartA(PartARequest request) {
+        BigDecimal ack;
+        try {
+            ack = new BigDecimal(request.getApplicationNumber());
         } catch (Exception e) {
-            response.put("error", "Invalid application number");
-            return response;
+            return false; // invalid application number
         }
+
+        DealerMaster dealer = dealerRepo.findByAckNo(ack).orElse(null);
+        if (dealer == null) return false;
+
+        dealer.setTradName(request.getTradingName());
+        dealer.setApplNameS(request.getApplicantName());
+        dealer.setFathName(request.getFathersName());
+        dealer.setDtBirth(LocalDate.parse(request.getDateOfBirth()));
+        dealer.setSex(request.getGender());
+        dealer.setPan(request.getPan());
+        dealer.setOffice(request.getOffice());
+        dealer.setRegType(request.getTypeOfRegistration());
+        dealer.setBusConstitution(request.getBusinessConstitution());
+
+        if (request.getContact() != null) {
+            dealer.setTelephone(request.getContact().getTelephone());
+            dealer.setFax(request.getContact().getFax());
+            dealer.setEmail(request.getContact().getEmail());
+            if (request.getContact().getMobile() != null) {
+                dealer.setMobile(new BigDecimal(request.getContact().getMobile()));
+            }
+        }
+
+        if (request.getAddress() != null) {
+            dealer.setPermAddr(request.getAddress().getRoomNo());
+            dealer.setPermPlace(request.getAddress().getVillage());
+            dealer.setPermArea(request.getAddress().getArea());
+            dealer.setPermDistrict(request.getAddress().getDistrict());
+            dealer.setPermOccupancyStatus(request.getAddress().getOccupancyStatus());
+
+            if (request.getAddress().getPinCode() != null) {
+                dealer.setPermPin(new BigDecimal(request.getAddress().getPinCode()));
+            }
+        }
+
+        dealerRepo.save(dealer);
+        return true;
     }
 
 }
-
-

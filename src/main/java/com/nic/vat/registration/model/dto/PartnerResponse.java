@@ -5,10 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class PartnerRequest {
-    private String applicationNumber;
+public class PartnerResponse {
     private String partnerType;
-    private String partnerTypeOther;
     private String name;
     private String fathersName;
     private String dateOfBirth;
@@ -19,11 +17,13 @@ public class PartnerRequest {
     private String area;
     private String village;
     private String permanentAddress;
+
     private ContactDTO contact;
     private BigDecimal interestPercent;
     private PartnershipDatesDTO partnershipDates;
     private ElectoralDetailsDTO electoralDetails;
     private UploadedDocument uploadedDocument;
+
     @Data
     public static class ContactDTO {
         private String telephone;
@@ -42,12 +42,12 @@ public class PartnerRequest {
         private String voterId;
         private String residentialCertNo;
     }
+
     @Data
     public static class UploadedDocument {
         private DocumentMeta idProof;
         private DocumentMeta addressProof;
     }
-
     @Data
     public static class DocumentMeta {
         private String name;
@@ -55,9 +55,3 @@ public class PartnerRequest {
         private long size;
     }
 }
-
-
-
-
-
-
